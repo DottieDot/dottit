@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"dottit/comment_service/model"
 
 	"gorm.io/gorm"
@@ -29,11 +30,12 @@ func (repo CommentRepo) GetCommentById(commentId uint64) model.Comment {
 func (repo CommentRepo) GetCommentsByThreadId(threadId uint64, first int, count int) []model.Comment {
 	var comments []model.Comment
 
-	repo.db.Find(&comments).
+	repo.db.
 		Order("score DESC").
-		Where("parent_id is NULL AND thread_id = ?", threadId).
+		Where("parent_id IS NULL AND thread_id = '?'", threadId).
 		Offset(first).
-		Limit(count)
+		Limit(count).
+		Find(&comments)
 
 	return comments
 }
@@ -41,11 +43,12 @@ func (repo CommentRepo) GetCommentsByThreadId(threadId uint64, first int, count 
 func (repo CommentRepo) GetCommentsByParentId(parentId uint64, first int, count int) []model.Comment {
 	var comments []model.Comment
 
-	repo.db.Find(&comments).
+	repo.db.
 		Order("score DESC").
 		Where("parent_id = ?", parentId).
 		Offset(first).
-		Limit(count)
+		Limit(count).
+		Find(&comments)
 
 	return comments
 }
@@ -55,7 +58,7 @@ func (repo CommentRepo) CreateComment(threadId uint64, parentId *uint64, user st
 		User:     user,
 		Text:     text,
 		ThreadId: threadId,
-		ParentId: parentId,
+		ParentId: sql.NullInt64 { Int64: int64(*parentId), Valid: parentId != nil },
 	}
 
 	repo.db.Create(&comment)

@@ -26,11 +26,15 @@ func (resolver *CommentResolver) Text() string {
 }
 
 func (resolver *CommentResolver) Parent() *CommentResolver {
-	comment := resolver.commentRepo.GetCommentById(resolver.comment.ID)
+	if resolver.comment.ParentId.Valid {
+		comment := resolver.commentRepo.GetCommentById(uint64(resolver.comment.ParentId.Int64))
 
-	return &CommentResolver{
-		commentRepo: resolver.commentRepo,
-		comment:     comment,
+		return &CommentResolver{
+			commentRepo: resolver.commentRepo,
+			comment:     comment,
+		}
+	} else {
+		return nil
 	}
 }
 

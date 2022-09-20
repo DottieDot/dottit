@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ type Comment struct {
 	ID        uint64
 	User      string
 	Text      string
-	ParentId  *uint64
+	ParentId  sql.NullInt64
 	ThreadId  uint64
 	Score     int `gorm:"default:0"`
 	CreatedAt time.Time
