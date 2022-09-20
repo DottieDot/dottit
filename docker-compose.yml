@@ -1,0 +1,4 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.10
+    hostname: rabbitmq

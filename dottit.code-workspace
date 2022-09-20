@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "services/comment-service"
+    },
+    {
+      "path": "services/gateway-service"
+    },
+    {
+      "path": "services/thread-service"
+    },
+    {
+      "path": "services/web-service"
+    }
+  ]
+}
