@@ -1,9 +1,9 @@
 package database
 
 import (
-	"database/sql"
 	"dottit/comment_service/model"
 
+	"github.com/Thor-x86/nullable"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +32,7 @@ func (repo CommentRepo) GetCommentsByThreadId(threadId uint64, first int, count 
 
 	repo.db.
 		Order("score DESC").
-		Where("parent_id IS NULL AND thread_id = '?'", threadId).
+		Where("parent_comment_id IS NULL AND thread_id = ?", threadId).
 		Offset(first).
 		Limit(count).
 		Find(&comments)
@@ -45,7 +45,7 @@ func (repo CommentRepo) GetCommentsByParentId(parentId uint64, first int, count 
 
 	repo.db.
 		Order("score DESC").
-		Where("parent_id = ?", parentId).
+		Where("parent_comment_id = ?", parentId).
 		Offset(first).
 		Limit(count).
 		Find(&comments)
@@ -55,10 +55,10 @@ func (repo CommentRepo) GetCommentsByParentId(parentId uint64, first int, count 
 
 func (repo CommentRepo) CreateComment(threadId uint64, parentId *uint64, user string, text string) model.Comment {
 	comment := model.Comment{
-		User:     user,
-		Text:     text,
-		ThreadId: threadId,
-		ParentId: sql.NullInt64 { Int64: int64(*parentId), Valid: parentId != nil },
+		User:            user,
+		Text:            text,
+		ThreadId:        threadId,
+		ParentCommentID: nullable.NewUint64(parentId),
 	}
 
 	repo.db.Create(&comment)
@@ -67,7 +67,7 @@ func (repo CommentRepo) CreateComment(threadId uint64, parentId *uint64, user st
 }
 
 func (repo CommentRepo) DeleteComment(id uint64) {
-	repo.db.Delete(id)
+	repo.db.Delete(&model.Comment{}, id)
 }
 
 func NewCommentRepo(db gorm.DB) CommentRepo {

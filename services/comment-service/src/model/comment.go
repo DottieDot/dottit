@@ -1,19 +1,18 @@
 package model
 
 import (
-	"database/sql"
 	"time"
 
-	"gorm.io/gorm"
+	"github.com/Thor-x86/nullable"
 )
 
 type Comment struct {
-	gorm.Model
-	ID        uint64
-	User      string
-	Text      string
-	ParentId  sql.NullInt64
-	ThreadId  uint64
-	Score     int `gorm:"default:0"`
-	CreatedAt time.Time
+	ID              uint64
+	User            string
+	Text            string
+	ParentCommentID nullable.Uint64
+	ParentComment   *Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ThreadId        uint64
+	Score           int `gorm:"default:0"`
+	CreatedAt       time.Time
 }

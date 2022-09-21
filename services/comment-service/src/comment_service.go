@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	connectionString := fmt.Sprintf("root:%s@tcp(%s:%s)/%s", os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_ADDR"), os.Getenv("MYSQL_PORT"), os.Getenv("MYSQL_DATABASE"))
+	connectionString := fmt.Sprintf("root:%s@tcp(%s:%s)/%s?parseTime=true", os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_ADDR"), os.Getenv("MYSQL_PORT"), os.Getenv("MYSQL_DATABASE"))
 	db, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 
 	if err != nil {
