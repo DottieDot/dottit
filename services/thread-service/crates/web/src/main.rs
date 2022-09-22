@@ -1,3 +1,4 @@
-fn main() {
-    println!("Hello, world!");
-}
+pub mod graphql;
+
+#[tokio::main]
+async fn main() {}

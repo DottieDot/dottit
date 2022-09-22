@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "./crates/database",
+  "./crates/database/migration",
   "./crates/model",
   "./crates/service",
   "./crates/web",

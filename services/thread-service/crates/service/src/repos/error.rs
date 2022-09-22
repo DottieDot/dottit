@@ -6,8 +6,8 @@ pub enum RepositoryError {
   #[error("entity with key \"{key}\" not found")]
   Notfound {
     key:    String,
-    source: Box<dyn StdError>
+    source: Option<Box<dyn StdError + Send + Sync>>
   },
-  #[error("unknown database error: {source:?}")]
-  Unknown { source: Box<dyn StdError> }
+  #[error("database error: {source:?}")]
+  DatabaseError { source: Box<dyn StdError + Send + Sync> }
 }

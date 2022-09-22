@@ -1,101 +1,106 @@
-use diesel::{
-  prelude::*,
-  result::{Error::NotFound, QueryResult},
-  QueryDsl
-};
-use model::models::{GuidStr, PagedResult, Pagination, Thread};
-use service::repos::{self, RepositoryError, RepositoryResult};
+use std::sync::Arc;
 
 use crate::{
-  model::{DbThread, DbThreadInsertable},
-  schema::threads,
-  types::DbPool
+  model::{thread, Thread as DbThread},
+  repo_error_from_db_error
 };
+use async_trait::async_trait;
+use model::models::{GuidStr, PagedResult, Pagination, Thread};
+use sea_orm::{
+  prelude::Uuid, ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait,
+  QueryFilter, QueryOrder, QuerySelect
+};
+use service::repos::{self, RepositoryError, RepositoryResult};
 
+#[derive(Clone)]
 pub struct ThreadRepository {
-  db: DbPool
+  db: Arc<DatabaseConnection>
 }
 
+#[async_trait]
 impl repos::ThreadRepository for ThreadRepository {
-  fn get_thread_by_id(&self, id: &GuidStr) -> RepositoryResult<Thread> {
-    let conn: &mut MysqlConnection = &mut self.db.get().unwrap();
+  async fn get_thread_by_id(&self, id: &GuidStr) -> RepositoryResult<Thread> {
+    let uuid = Uuid::parse_str(id).unwrap();
 
-    let query_result: QueryResult<DbThread> = threads::table
-      .select(threads::all_columns)
-      .filter(threads::id.eq(id))
-      .first::<DbThread>(conn);
+    let query_result = DbThread::find_by_id(uuid)
+      .one(self.db.as_ref())
+      .await
+      .map_err(repo_error_from_db_error)?;
 
-    match query_result {
-      Ok(thread) => Ok(thread.into()),
-      Err(error) => {
-        match error {
-          NotFound => {
-            Err(RepositoryError::Notfound {
-              key:    id.to_owned(),
-              source: Box::new(error)
-            })
-          }
-          _ => {
-            Err(RepositoryError::Unknown {
-              source: Box::new(error)
-            })
-          }
-        }
+    query_result.map(|thread| thread.into()).ok_or_else(|| {
+      RepositoryError::Notfound {
+        key:    id.to_owned(),
+        source: None
       }
-    }
+    })
   }
 
-  fn get_threads_by_board(
+  async fn get_threads_by_board(
     &self,
     board: &str,
     pagination: Pagination
   ) -> RepositoryResult<PagedResult<Thread>> {
-    let conn: &mut MysqlConnection = &mut self.db.get().unwrap();
-
-    let query_result: QueryResult<Vec<DbThread>> = threads::table
-      .select(threads::all_columns)
-      .filter(threads::board.eq(board))
-      .offset(pagination.first.try_into().unwrap())
-      .limit((pagination.count + 1).try_into().unwrap())
-      .load::<DbThread>(conn);
+    let query_result = DbThread::find()
+      .filter(thread::Column::Board.eq(board))
+      .order_by_desc(thread::Column::Score)
+      .offset(pagination.first)
+      .limit(pagination.count + 1)
+      .all(self.db.as_ref())
+      .await;
 
     match query_result {
       Ok(threads) => {
         let next = pagination.next(threads.len());
         let items = threads
           .into_iter()
-          .map(|t| Into::<Thread>::into(t))
+          .map(Into::<Thread>::into)
           .take(pagination.count.try_into().unwrap())
           .collect::<Vec<_>>();
 
         Ok(PagedResult { items, next })
       }
       Err(e) => {
-        Err(RepositoryError::Unknown {
+        Err(RepositoryError::DatabaseError {
           source: Box::new(e)
         })
       }
     }
   }
 
-  fn create_thread<'a>(
+  async fn create_thread(
     &self,
     board: &str,
     user: &str,
-    text: &str,
-    media: &str
+    title: &str,
+    text: Option<&str>,
+    media: Option<&str>
   ) -> RepositoryResult<Thread> {
-    let conn: &mut MysqlConnection = &mut self.db.get().unwrap();
-
-    let new_thread = DbThreadInsertable {
-      board,
-      user,
-      text,
-      media
+    let new_thread = thread::ActiveModel {
+      id:    ActiveValue::NotSet,
+      board: ActiveValue::Set(board.to_owned()),
+      user:  ActiveValue::Set(user.to_owned()),
+      title: ActiveValue::Set(title.to_owned()),
+      text:  ActiveValue::Set(text.map(|s| s.to_owned())),
+      media: ActiveValue::Set(media.map(|s| s.to_owned())),
+      score: ActiveValue::NotSet
     };
 
-    let query_result = diesel::insert_into(threads::table)
-      .values(&new_thread)
-      .get_result(conn);
+    let query_result = new_thread
+      .insert(self.db.as_ref())
+      .await
+      .map_err(repo_error_from_db_error)?;
+
+    Ok(query_result.into())
+  }
+
+  async fn delete_thread(&self, thread_id: &GuidStr) -> RepositoryResult<()> {
+    let uuid = Uuid::parse_str(thread_id).unwrap();
+
+    DbThread::delete_by_id(uuid)
+      .exec(self.db.as_ref())
+      .await
+      .map_err(repo_error_from_db_error)?;
+
+    Ok(())
   }
 }

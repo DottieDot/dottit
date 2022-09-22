@@ -10,3 +10,5 @@ path = "src/lib.rs"
 [dependencies]
 model = { path = "../model" }
 thiserror = "1.0.35"
+async-trait = "0.1.57"
+dyn-clone = "1.0.9"

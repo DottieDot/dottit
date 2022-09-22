@@ -6,7 +6,7 @@ pub struct Thread {
   pub board: String,
   pub user:  String,
   pub title: String,
-  pub text:  String,
-  pub media: String,
+  pub text:  Option<String>,
+  pub media: Option<String>,
   pub score: i32
 }
