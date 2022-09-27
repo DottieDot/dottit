@@ -1,3 +1,5 @@
+pub use migration;
+
 mod conversion;
 pub(crate) mod model;
 pub mod repos;

@@ -13,3 +13,8 @@ tokio = { version = "1.0", features = ["full"] }
 service = { path = "../service" }
 database = { path = "../database" }
 model = { path = "../model" }
+sea-orm = { version = "^0", features = [
+  "sqlx-mysql",
+  "runtime-tokio-rustls",
+  "macros",
+] }

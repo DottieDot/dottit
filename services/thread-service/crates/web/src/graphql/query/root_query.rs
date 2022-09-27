@@ -3,21 +3,20 @@ use std::sync::Arc;
 use async_graphql::{Context, Object};
 use service::services::traits::{GetThreadByIdError, ThreadService};
 
-use super::thread::ThreadQuery;
+use super::thread_query::ThreadQuery;
 
-pub struct Query {
-  thread_service: Arc<dyn ThreadService>
-}
+pub struct RootQuery;
 
 #[Object]
-impl Query {
+impl RootQuery {
   async fn get_thread_by_id(
     &self,
-    _ctx: &Context<'_>,
+    ctx: &Context<'_>,
     thread_id: String
   ) -> Result<ThreadQuery, GetThreadByIdError> {
-    self
-      .thread_service
+    let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
+
+    service
       .get_thread_by_id(&thread_id)
       .await
       .map(ThreadQuery::from)

@@ -17,3 +17,4 @@ service = { path = "../service" }
 model = { path = "../model" }
 async-trait = "0.1.57"
 dyn-clone = "1.0.9"
+migration = { path = "./migration" }

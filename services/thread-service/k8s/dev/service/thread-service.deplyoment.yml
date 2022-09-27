@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thread-service
+  labels:
+    app: dottit
+    service: thread-service
+spec:
+  selector:
+    matchLabels:
+      app: thread-service
+  template:
+    metadata:
+      labels:
+        app: thread-service
+    spec:
+      containers:
+        - name: thread-service
+          image: thread-service
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres:password@thread-service-postgres:5432/thread_service"
+      initContainers:
+        - name: wait-for-thread-service-postgres
+          image: jbergknoff/postgresql-client
+          command:
+            [
+              "sh",
+              "-c",
+              "until pg_isready -h thread-service-postgres; do echo waiting for postgres; sleep 2; done;",
+            ]

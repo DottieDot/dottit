@@ -1,17 +1,17 @@
 apiVersion: skaffold/v2beta29
 kind: Config
-# build:
-#   artifacts:
-#     - image: comment-service
-#       context: ./
-#   tagPolicy:
-#     gitCommit: {}
-#   local:
-#     useBuildkit: false
+build:
+  artifacts:
+    - image: thread-service
+      context: ./
+  tagPolicy:
+    gitCommit: {}
+  local:
+    useBuildkit: false
 deploy:
   kubectl:
     manifests:
       # The order is important
       - "./k8s/dev/db/*.pv.yml"
       - "./k8s/dev/db/*.yml"
-      # - "./k8s/dev/service/*.yml"
+      - "./k8s/dev/service/*.yml"

@@ -17,6 +17,12 @@ pub struct ThreadRepository {
   db: Arc<DatabaseConnection>
 }
 
+impl ThreadRepository {
+  pub fn new(db: Arc<DatabaseConnection>) -> Self {
+    Self { db }
+  }
+}
+
 #[async_trait]
 impl repos::ThreadRepository for ThreadRepository {
   async fn get_thread_by_id(&self, id: &GuidStr) -> RepositoryResult<Thread> {

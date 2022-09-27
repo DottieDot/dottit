@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use model::models::{GuidStr, PagedResult, Pagination, Thread};
 
@@ -9,7 +11,13 @@ use super::traits::{
 
 #[derive(Clone)]
 pub struct ThreadService {
-  thread_repo: Box<dyn ThreadRepository>
+  thread_repo: Arc<dyn ThreadRepository>
+}
+
+impl ThreadService {
+  pub fn new(thread_repo: Arc<dyn ThreadRepository>) -> Self {
+    Self { thread_repo }
+  }
 }
 
 #[async_trait]

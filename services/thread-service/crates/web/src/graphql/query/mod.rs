@@ -1,5 +1,5 @@
-mod query;
-mod thread;
+mod root_query;
+mod thread_query;
 
-pub use query::*;
-pub use thread::*;
+pub use root_query::*;
+pub use thread_query::*;
