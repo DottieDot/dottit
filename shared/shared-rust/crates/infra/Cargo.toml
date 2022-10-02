@@ -1,0 +1,16 @@
+[package]
+name = "dottit-shared-infra"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "shared_infra"
+path = "src/lib.rs"
+
+[dependencies]
+dottit-shared-service = { path = "../service" }
+async-trait = "0.1.57"
+lapin = "2.1.1"
+anyhow = "1.0.65"
+tokio = { version = "0.2", features = ["full"] }
+uuid = { version = "1.1.2", features = ["v4"] }

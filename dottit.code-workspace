@@ -4,6 +4,9 @@
       "path": "."
     },
     {
+      "path": "shared/shared-rust"
+    },
+    {
       "path": "services/message-bus"
     },
     {
