@@ -18,7 +18,7 @@ where
 #[error("{msg}")]
 pub struct IntoEventDataError {
   pub msg:    String,
-  pub source: Option<Box<dyn std::error::Error>>
+  pub source: Option<Box<dyn std::error::Error + Send + Sync>>
 }
 
 impl From<serde_json::Error> for IntoEventDataError {

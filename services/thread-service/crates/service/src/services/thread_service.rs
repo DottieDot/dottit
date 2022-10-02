@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use model::models::{GuidStr, PagedResult, Pagination, Thread};
+use shared_service::{events::ThreadDeletedEvent, messaging::EventBus};
 
 use crate::repos::{RepositoryError, ThreadRepository};
 
@@ -11,12 +12,16 @@ use super::traits::{
 
 #[derive(Clone)]
 pub struct ThreadService {
-  thread_repo: Arc<dyn ThreadRepository>
+  thread_repo: Arc<dyn ThreadRepository>,
+  event_bus:   Arc<EventBus>
 }
 
 impl ThreadService {
-  pub fn new(thread_repo: Arc<dyn ThreadRepository>) -> Self {
-    Self { thread_repo }
+  pub fn new(thread_repo: Arc<dyn ThreadRepository>, event_bus: Arc<EventBus>) -> Self {
+    Self {
+      thread_repo,
+      event_bus
+    }
   }
 }
 
@@ -60,7 +65,16 @@ impl traits::ThreadService for ThreadService {
   }
 
   async fn delete_thread(&self, thread_id: &GuidStr) -> Result<(), DeleteThreadError> {
-    Ok(self.thread_repo.delete_thread(thread_id).await?)
+    self.thread_repo.delete_thread(thread_id).await?;
+
+    self
+      .event_bus
+      .publish(ThreadDeletedEvent {
+        thread_id: thread_id.to_owned()
+      })
+      .await;
+
+    Ok(())
   }
 }
 

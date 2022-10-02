@@ -9,8 +9,9 @@ path = "src/lib.rs"
 
 [dependencies]
 model = { path = "../model" }
-thiserror = "1.0.35"
+thiserror = "1.0.37"
 async-trait = "0.1.57"
 dyn-clone = "1.0.9"
 amiquip = "0.4.2"
 tokio = { version = "0.2", features = ["full"] }
+dottit-shared-service = { git = "https://github.com/DottieDot/dottit.git" }

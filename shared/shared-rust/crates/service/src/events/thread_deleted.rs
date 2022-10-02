@@ -6,7 +6,7 @@ use super::THREAD_EXCHANGE;
 
 #[derive(Serialize, Deserialize)]
 pub struct ThreadDeletedEvent {
-  event_id: String
+  pub thread_id: String
 }
 
 impl Event for ThreadDeletedEvent {

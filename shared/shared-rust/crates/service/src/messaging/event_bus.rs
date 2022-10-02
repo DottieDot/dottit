@@ -4,10 +4,16 @@ use tokio::sync::Mutex;
 use super::{EventBusBackend, FromEventData, IntoEventData};
 
 pub struct EventBus {
-  backend: Mutex<dyn EventBusBackend>
+  backend: Mutex<Box<dyn EventBusBackend + Send>>
 }
 
 impl EventBus {
+  pub fn new(backend: Box<dyn EventBusBackend + Send>) -> Self {
+    Self {
+      backend: Mutex::new(backend)
+    }
+  }
+
   pub async fn subscribe<Event, Handler, Future>(&self, id: String, handler: Handler)
   where
     Event: super::Event + FromEventData + Sized + Send + Sync,
@@ -37,11 +43,11 @@ impl EventBus {
   where
     Event: super::Event + IntoEventData
   {
-    self
-      .backend
-      .lock()
-      .await
-      .publish(Event::metadata(), &event.into_event_data().unwrap())
-      .await;
+    let data = event.into_event_data().unwrap();
+
+    let lock_fut = self.backend.lock();
+    let backend = lock_fut.await;
+    let publish_fut = backend.publish(Event::metadata(), &data);
+    publish_fut.await;
   }
 }

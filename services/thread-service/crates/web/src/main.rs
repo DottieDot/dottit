@@ -11,6 +11,7 @@ use self::{
 };
 
 mod database;
+mod event_bus;
 pub mod graphql;
 
 async fn graphql_handler(schema: Extension<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
@@ -24,9 +25,12 @@ async fn main() {
 
   db.migrate().await;
 
+  // event bus
+  let event_bus = event_bus::connect().await;
+
   // services
   let thread_repo = Arc::new(ThreadRepository::new(db.connection().clone()));
-  let thread_service = Arc::new(ThreadService::new(thread_repo));
+  let thread_service = Arc::new(ThreadService::new(thread_repo, event_bus));
 
   let schema = build_schema(thread_service).await;
 
