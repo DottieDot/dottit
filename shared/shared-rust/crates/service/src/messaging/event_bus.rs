@@ -46,7 +46,7 @@ impl EventBus {
     let data = event.into_event_data().unwrap();
 
     let lock_fut = self.backend.lock();
-    let backend = lock_fut.await;
+    let mut backend = lock_fut.await;
     let publish_fut = backend.publish(Event::metadata(), &data);
     publish_fut.await;
   }

@@ -1,5 +1,6 @@
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{extract::Extension, routing::post, Router};
+use shared_service::events::ThreadDeletedEvent;
 use std::sync::Arc;
 
 use infrastructure::repos::ThreadRepository;
@@ -28,9 +29,21 @@ async fn main() {
   // event bus
   let event_bus = event_bus::connect().await;
 
+  event_bus
+    .subscribe(
+      "thread_service.thread_deleted".to_owned(),
+      |event: ThreadDeletedEvent| {
+        async move {
+          println!("Thread {} deleted", event.thread_id);
+          Ok(())
+        }
+      }
+    )
+    .await;
+
   // services
   let thread_repo = Arc::new(ThreadRepository::new(db.connection().clone()));
-  let thread_service = Arc::new(ThreadService::new(thread_repo, event_bus));
+  let thread_service = Arc::new(ThreadService::new(thread_repo, event_bus.clone()));
 
   let schema = build_schema(thread_service).await;
 

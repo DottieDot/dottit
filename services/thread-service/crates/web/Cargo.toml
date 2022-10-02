@@ -18,5 +18,5 @@ sea-orm = { version = "^0", features = [
   "runtime-tokio-rustls",
   "macros",
 ] }
-dottit-shared-service = { git = "https://github.com/DottieDot/dottit.git" }
 dottit-shared-infra = { git = "https://github.com/DottieDot/dottit.git" }
+dottit-shared-service = { git = "https://github.com/DottieDot/dottit.git" }

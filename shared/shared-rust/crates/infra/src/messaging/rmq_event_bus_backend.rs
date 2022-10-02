@@ -72,7 +72,7 @@ impl RmqEventBusBackend {
     self
       .channel
       .queue_declare(
-        &format!("{}.{name}", metadata.exchange.name),
+        name,
         QueueDeclareOptions {
           passive,
           durable,
@@ -138,11 +138,15 @@ impl EventBusBackend for RmqEventBusBackend {
     metadata: EventMetadata,
     handler: RawEventHandler
   ) {
-    self.declare_exchange(metadata.exchange).await;
-    self.declare_queue(&queue_name, metadata).await;
-    self.bind_queue(&queue_name, metadata).await;
+    let new_queue_name = &format!("{}.{queue_name}", metadata.exchange.name);
 
-    let mut consumer = self.consume(&queue_name, metadata.consume_options).await;
+    self.declare_exchange(metadata.exchange).await;
+    self.declare_queue(&new_queue_name, metadata).await;
+    self.bind_queue(&new_queue_name, metadata).await;
+
+    let mut consumer = self
+      .consume(&new_queue_name, metadata.consume_options)
+      .await;
 
     tokio::spawn(async move {
       while let Some(delivery) = consumer.next().await {
