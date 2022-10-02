@@ -2,7 +2,7 @@ use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{extract::Extension, routing::post, Router};
 use std::sync::Arc;
 
-use ::database::repos::ThreadRepository;
+use infrastructure::repos::ThreadRepository;
 use service::services::ThreadService;
 
 use self::{

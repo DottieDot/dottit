@@ -34,6 +34,10 @@ impl ThreadQuery {
   async fn score(&self) -> i32 {
     self.thread.score
   }
+
+  async fn hello(&self) -> String {
+    "Hello World!".to_owned()
+  }
 }
 
 impl From<Thread> for ThreadQuery {

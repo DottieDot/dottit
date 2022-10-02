@@ -1,5 +1,7 @@
 apiVersion: skaffold/v2beta29
 kind: Config
+requires:
+  - path: "../message-bus"
 build:
   artifacts:
     - image: thread-service

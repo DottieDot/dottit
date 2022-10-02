@@ -4,6 +4,9 @@
       "path": "."
     },
     {
+      "path": "services/message-bus"
+    },
+    {
       "path": "services/comment-service"
     },
     {

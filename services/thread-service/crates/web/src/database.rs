@@ -1,6 +1,6 @@
 use std::{env, sync::Arc};
 
-use database::migration::{Migrator, MigratorTrait};
+use infrastructure::migration::{Migrator, MigratorTrait};
 use sea_orm::DatabaseConnection;
 
 pub struct Database {

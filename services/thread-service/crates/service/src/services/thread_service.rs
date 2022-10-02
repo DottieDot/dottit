@@ -47,6 +47,10 @@ impl traits::ThreadService for ThreadService {
     text: Option<&str>,
     media: Option<&str>
   ) -> Result<Thread, traits::CreateThreadError> {
+    if text.is_none() && media.is_none() {
+      return Err(CreateThreadError::NoConent);
+    }
+
     Ok(
       self
         .thread_repo

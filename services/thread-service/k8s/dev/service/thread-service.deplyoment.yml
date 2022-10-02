@@ -27,6 +27,18 @@ spec:
           env:
             - name: DATABASE_URL
               value: "postgres://postgres:password@thread-service-postgres:5432/thread_service"
+            - name: RABBITMQ_HOST
+              value: "message-bus:5672"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: password
       initContainers:
         - name: wait-for-thread-service-postgres
           image: jbergknoff/postgresql-client

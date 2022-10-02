@@ -50,6 +50,8 @@ pub enum GetThreadsByBoardError {
 
 #[derive(Error, Debug)]
 pub enum CreateThreadError {
+  #[error("no content provided")]
+  NoConent,
   #[error("an unknown error occured")]
   Unknwon {
     source: Box<dyn StdError + Send + Sync>
