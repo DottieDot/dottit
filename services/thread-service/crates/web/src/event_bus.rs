@@ -10,6 +10,8 @@ pub async fn connect() -> Arc<EventBus> {
 
   let uri = format!("amqp://{rmq_user}:{rmq_pass}@{rmq_host}");
 
+  println!("{uri}");
+
   let rmq = RmqEventBusBackend::connect(&uri).await;
 
   Arc::new(EventBus::new(Box::new(rmq)))

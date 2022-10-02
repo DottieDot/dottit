@@ -20,5 +20,5 @@ pub trait EventBusBackend {
     handler: RawEventHandler
   );
 
-  async fn publish(&self, metadata: EventMetadata, data: &[u8]);
+  async fn publish(&mut self, metadata: EventMetadata, data: &[u8]);
 }

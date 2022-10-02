@@ -159,7 +159,9 @@ impl EventBusBackend for RmqEventBusBackend {
     });
   }
 
-  async fn publish(&self, metadata: EventMetadata, data: &[u8]) {
+  async fn publish(&mut self, metadata: EventMetadata, data: &[u8]) {
+    self.declare_exchange(metadata.exchange).await;
+
     self
       .channel
       .basic_publish(
