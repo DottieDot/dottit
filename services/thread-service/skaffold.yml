@@ -5,7 +5,12 @@ requires:
 build:
   artifacts:
     - image: thread-service
-      context: ./
+      context: ../../
+      docker:
+        dockerfile: services/thread-service/Dockerfile
+        noCache: false
+        pullParent: false
+        squash: false
   tagPolicy:
     gitCommit: {}
   local:

@@ -9,28 +9,30 @@ use shared_service::messaging::{
   ConsumeOptions, EventBusBackend, EventExchangeType, EventMetadata, ExchangeMetadata,
   ExchangeOptions, QueueOptions, RawEventHandler
 };
-use tokio::stream::StreamExt;
+use tokio::{runtime::Runtime, stream::StreamExt};
 use uuid::Uuid;
 
-pub struct RmqEventBusBackend {
+pub struct AmqpEventBusBackend {
   _connection: Connection,
   channel:     Channel,
-  exchanges:   HashSet<String>
+  exchanges:   HashSet<String>,
+  runtime:     Runtime
 }
 
-impl RmqEventBusBackend {
+impl AmqpEventBusBackend {
   pub async fn connect(uri: &str) -> Self {
     let connection = Connection::connect(uri, Default::default()).await.unwrap();
     let channel = connection.create_channel().await.unwrap();
     Self {
       _connection: connection,
       channel,
-      exchanges: Default::default()
+      exchanges: Default::default(),
+      runtime: Runtime::new().unwrap()
     }
   }
 }
 
-impl RmqEventBusBackend {
+impl AmqpEventBusBackend {
   async fn declare_exchange(&mut self, metadata: ExchangeMetadata) {
     if self.exchanges.insert(metadata.name.to_owned()) {
       let ExchangeOptions {
@@ -131,7 +133,7 @@ impl RmqEventBusBackend {
 }
 
 #[async_trait]
-impl EventBusBackend for RmqEventBusBackend {
+impl EventBusBackend for AmqpEventBusBackend {
   async fn subscribe(
     &mut self,
     queue_name: String,
@@ -148,7 +150,7 @@ impl EventBusBackend for RmqEventBusBackend {
       .consume(&new_queue_name, metadata.consume_options)
       .await;
 
-    tokio::spawn(async move {
+    self.runtime.spawn(async move {
       while let Some(delivery) = consumer.next().await {
         let delivery = delivery.unwrap();
         let acker = delivery.acker;

@@ -35,7 +35,7 @@ pub enum GetThreadByIdError {
     source:    Box<dyn StdError + Send + Sync>
   },
   #[error("an unknown error occured")]
-  Unknwon {
+  Unknown {
     source: Box<dyn StdError + Send + Sync>
   }
 }
@@ -66,7 +66,7 @@ pub enum DeleteThreadError {
     source:    Box<dyn StdError + Send + Sync>
   },
   #[error("an unknown error occured")]
-  Unknwon {
+  Unknown {
     source: Box<dyn StdError + Send + Sync>
   }
 }

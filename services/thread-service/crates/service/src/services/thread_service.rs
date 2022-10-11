@@ -81,14 +81,14 @@ impl traits::ThreadService for ThreadService {
 impl From<RepositoryError> for GetThreadByIdError {
   fn from(error: RepositoryError) -> Self {
     match &error {
-      RepositoryError::Notfound { key, .. } => {
+      RepositoryError::NotFound { key, .. } => {
         Self::NotFound {
           thread_id: key.clone(),
           source:    Box::new(error)
         }
       }
       _ => {
-        Self::Unknwon {
+        Self::Unknown {
           source: Box::new(error)
         }
       }
@@ -99,14 +99,14 @@ impl From<RepositoryError> for GetThreadByIdError {
 impl From<RepositoryError> for DeleteThreadError {
   fn from(error: RepositoryError) -> Self {
     match &error {
-      RepositoryError::Notfound { key, .. } => {
+      RepositoryError::NotFound { key, .. } => {
         Self::NotFound {
           thread_id: key.clone(),
           source:    Box::new(error)
         }
       }
       _ => {
-        Self::Unknwon {
+        Self::Unknown {
           source: Box::new(error)
         }
       }

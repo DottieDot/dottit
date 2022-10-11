@@ -22,7 +22,7 @@ impl From<thread::Model> for Thread {
 pub fn repo_error_from_db_error(error: DbErr) -> RepositoryError {
   match &error {
     DbErr::RecordNotFound(record) => {
-      RepositoryError::Notfound {
+      RepositoryError::NotFound {
         key:    record.clone(),
         source: Some(Box::new(error))
       }

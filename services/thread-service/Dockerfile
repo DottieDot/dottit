@@ -1,25 +1,77 @@
 FROM lukemathwalker/cargo-chef:latest-rust-1.64.0 AS chef
 WORKDIR /app
 
+#####################################
+# PLAN                              #
+#####################################
 FROM chef AS planner
-COPY . .
+
+############
+# Shared   #
+############
+WORKDIR /app/shared/shared-rust
+COPY ./shared/shared-rust .
 
 RUN cargo chef prepare --recipe-path recipe.json
 
+############
+# Service  #
+############
+WORKDIR /app/services/thread-service
+COPY ./services/thread-service .
+
+RUN cargo chef prepare --recipe-path recipe.json
+
+
+#####################################
+# BUILD                             #
+#####################################
 FROM chef AS builder 
 
 ENV RUST_BACKTRACE=1
 
-COPY ./rust-toolchain.toml . 
+############
+# Shared   #
+############
+WORKDIR /app/shared/shared-rust
 
-COPY --from=planner /app/recipe.json recipe.json
+# Copy toolchain
+COPY ./shared/shared-rust/rust-toolchain.toml . 
 
-# Build dependencies - this is the caching Docker layer!
+# Get cargo chef recipe
+COPY --from=planner /app/shared/shared-rust/recipe.json recipe.json
+
+# Delete cargo cache
+RUN rm -rf ~/.cargo/registry/*
+
+# Build and Cache dependencies
 RUN cargo chef cook --recipe-path recipe.json
 
-# Build application
-COPY . .
+# Copy shared crates
+COPY ./shared/shared-rust .
 
+# Build shared crates
+RUN cargo build
+
+############
+# Service  #
+############
+WORKDIR /app/services/thread-service
+
+# Copy toolchain
+COPY ./services/thread-service/rust-toolchain.toml . 
+
+# Get cargo chec recipe
+COPY --from=planner /app/services/thread-service/recipe.json recipe.json
+
+# Build and Cache dependencies
+RUN cargo chef cook --recipe-path recipe.json
+
+# Copy service
+COPY ./services/thread-service .
+
+# Build service
 RUN cargo build --bin web
 
+# Run service
 ENTRYPOINT [ "cargo", "run", "--bin", "web" ]

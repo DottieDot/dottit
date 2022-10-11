@@ -1,6 +1,6 @@
 use std::{env, sync::Arc};
 
-use shared_infra::messaging::RmqEventBusBackend;
+use shared_infra::messaging::AmqpEventBusBackend;
 use shared_service::messaging::EventBus;
 
 pub async fn connect() -> Arc<EventBus> {
@@ -12,7 +12,7 @@ pub async fn connect() -> Arc<EventBus> {
 
   println!("{uri}");
 
-  let rmq = RmqEventBusBackend::connect(&uri).await;
+  let rmq = AmqpEventBusBackend::connect(&uri).await;
 
   Arc::new(EventBus::new(Box::new(rmq)))
 }

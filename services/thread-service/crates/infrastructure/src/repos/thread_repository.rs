@@ -34,7 +34,7 @@ impl repos::ThreadRepository for ThreadRepository {
       .map_err(repo_error_from_db_error)?;
 
     query_result.map(|thread| thread.into()).ok_or_else(|| {
-      RepositoryError::Notfound {
+      RepositoryError::NotFound {
         key:    id.to_owned(),
         source: None
       }
