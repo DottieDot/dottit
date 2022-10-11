@@ -9,7 +9,8 @@ use shared_service::messaging::{
   ConsumeOptions, EventBusBackend, EventExchangeType, EventMetadata, ExchangeMetadata,
   ExchangeOptions, QueueOptions, RawEventHandler
 };
-use tokio::{runtime::Runtime, stream::StreamExt};
+use tokio::runtime::Runtime;
+use tokio_stream::StreamExt;
 use uuid::Uuid;
 
 pub struct AmqpEventBusBackend {
