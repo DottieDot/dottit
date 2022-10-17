@@ -1,13 +1,13 @@
 #[derive(Clone, Copy)]
-pub struct EventMetadata {
-  pub exchange:        ExchangeMetadata,
-  pub queue:           QueueMetadata,
+pub struct EventMetadata<'a> {
+  pub exchange:        ExchangeMetadata<'a>,
+  pub queue:           QueueMetadata<'a>,
   pub consume_options: ConsumeOptions
 }
 
 #[derive(Clone, Copy)]
-pub struct ExchangeMetadata {
-  pub name:          &'static str,
+pub struct ExchangeMetadata<'a> {
+  pub name:          &'a str,
   pub exchange_type: EventExchangeType,
   pub options:       ExchangeOptions
 }
@@ -30,8 +30,8 @@ pub struct ExchangeOptions {
 }
 
 #[derive(Clone, Copy)]
-pub struct QueueMetadata {
-  pub routing_key:  &'static str,
+pub struct QueueMetadata<'a> {
+  pub routing_key:  &'a str,
   pub options:      QueueOptions,
   pub bind_options: QueueBindOptions
 }

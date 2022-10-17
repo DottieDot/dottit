@@ -17,12 +17,12 @@ impl EventBus {
   pub async fn manual_subscribe<Model, Handler, Future>(
     &self,
     id: String,
-    metadata: EventMetadata,
+    metadata: EventMetadata<'static>,
     handler: Handler
   ) where
     Model: FromEventData + Sized + Send + Sync,
-    Future: std::future::Future<Output = Result<()>> + Sync + Send + 'static,
-    Handler: Fn(Model) -> Future + Send + Sync + Clone + 'static
+    Future: std::future::Future<Output = Result<()>> + Send,
+    Handler: Fn(Model) -> Future + Send + Clone + 'static
   {
     self
       .backend
@@ -35,7 +35,8 @@ impl EventBus {
           let cloned = handler.clone();
           Box::pin(async move {
             let event = Model::from_event_data(&data)?;
-            cloned(event).await?;
+            let fut = cloned(event);
+            fut.await?;
             Ok(())
           })
         })
@@ -52,9 +53,9 @@ impl EventBus {
     self.manual_subscribe(id, Event::metadata(), handler).await
   }
 
-  pub async fn manual_publish(
+  pub async fn manual_publish<'a>(
     &self,
-    metadata: EventMetadata,
+    metadata: EventMetadata<'a>,
     data: impl ToEventData
   ) -> Result<(), ToEventDataError> {
     let data = data.to_event_data()?;

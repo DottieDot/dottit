@@ -4,6 +4,7 @@ use crate::messaging::{FromEventData, FromEventDataError};
 
 pub struct MediatorQuery {
   pub return_address: String,
+  pub query_id:       String,
   pub data:           Vec<u8>
 }
 
@@ -13,7 +14,14 @@ impl FromEventData for MediatorQuery {
 
     let return_address = reader.read_cstr().map_err(|e| {
       FromEventDataError {
-        msg:    "failed to read cstring from event data".to_owned(),
+        msg:    "failed to read return address from event data".to_owned(),
+        source: Some(e.into())
+      }
+    })?;
+
+    let query_id = reader.read_cstr().map_err(|e| {
+      FromEventDataError {
+        msg:    "failed to read query id from event data".to_owned(),
         source: Some(e.into())
       }
     })?;
@@ -22,6 +30,7 @@ impl FromEventData for MediatorQuery {
 
     Ok(Self {
       return_address,
+      query_id,
       data
     })
   }

@@ -10,7 +10,7 @@ pub struct ThreadDeletedEvent {
 }
 
 impl Event for ThreadDeletedEvent {
-  fn metadata() -> EventMetadata {
+  fn metadata() -> EventMetadata<'static> {
     EventMetadata {
       exchange:        THREAD_EXCHANGE,
       queue:           QueueMetadata {

@@ -13,12 +13,14 @@ pub struct MediatorConsumer {
 }
 
 impl MediatorConsumer {
-  pub async fn subscribe<Q, Fut>(&self, handler: impl Fn(Q) -> Fut + Send + Sync + 'static + Clone)
+  pub async fn subscribe<Q, Fut>(&self, handler: impl Fn(Q) -> Fut + Send + Clone + 'static)
   where
-    Q: MediatorQuery + FromEventData + Send + Sync + 'static,
-    Q::Response: ToEventData + Send + Sync + 'static,
-    Fut: Future<Output = Result<Q::Response>> + Sync + Send + 'static
+    Q: MediatorQuery + FromEventData + Send,
+    Q::Response: ToEventData + Send,
+    Fut: Future<Output = Result<Q::Response>> + Send
   {
+    let event_bus = self.event_bus.clone();
+
     self
       .event_bus
       .manual_subscribe(
@@ -34,13 +36,13 @@ impl MediatorConsumer {
         },
         move |data: events::MediatorQuery| {
           let cloned_handler = handler.clone();
+          let event_bus = event_bus.clone();
           async move {
             let event_data = Q::from_event_data(&data.data)?;
             let fut = cloned_handler(event_data);
             let result = fut.await?;
 
-            self
-              .event_bus
+            event_bus
               .manual_publish(
                 EventMetadata {
                   exchange:        MEDIATOR_EXCHANGE,

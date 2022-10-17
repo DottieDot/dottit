@@ -35,7 +35,7 @@ impl AmqpEventBusBackend {
 }
 
 impl AmqpEventBusBackend {
-  async fn declare_exchange(&mut self, metadata: ExchangeMetadata) {
+  async fn declare_exchange<'a>(&mut self, metadata: ExchangeMetadata<'a>) {
     if self.exchanges.insert(metadata.name.to_owned()) {
       let ExchangeOptions {
         passive,
@@ -64,7 +64,7 @@ impl AmqpEventBusBackend {
     }
   }
 
-  async fn declare_queue(&self, name: &str, metadata: EventMetadata) {
+  async fn declare_queue<'a>(&self, name: &str, metadata: EventMetadata<'a>) {
     let QueueOptions {
       passive,
       durable,
@@ -90,7 +90,7 @@ impl AmqpEventBusBackend {
       .unwrap();
   }
 
-  async fn bind_queue(&self, name: &str, metadata: EventMetadata) {
+  async fn bind_queue<'a>(&self, name: &str, metadata: EventMetadata<'a>) {
     self
       .channel
       .queue_bind(
@@ -136,10 +136,10 @@ impl AmqpEventBusBackend {
 
 #[async_trait]
 impl EventBusBackend for AmqpEventBusBackend {
-  async fn subscribe(
+  async fn subscribe<'a>(
     &mut self,
     queue_name: String,
-    metadata: EventMetadata,
+    metadata: EventMetadata<'a>,
     handler: RawEventHandler
   ) {
     let new_queue_name = &format!("{}.{queue_name}", metadata.exchange.name);
@@ -179,7 +179,7 @@ impl EventBusBackend for AmqpEventBusBackend {
     });
   }
 
-  async fn publish(&mut self, metadata: EventMetadata, data: &[u8]) {
+  async fn publish<'a>(&mut self, metadata: EventMetadata<'a>, data: &[u8]) {
     self.declare_exchange(metadata.exchange).await;
 
     self

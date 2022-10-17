@@ -72,7 +72,8 @@ impl traits::ThreadService for ThreadService {
       .publish(ThreadDeletedEvent {
         thread_id: thread_id.to_owned()
       })
-      .await;
+      .await
+      .unwrap();
 
     Ok(())
   }
