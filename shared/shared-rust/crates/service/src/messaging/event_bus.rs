@@ -1,7 +1,7 @@
 use anyhow::Result;
 use tokio::sync::Mutex;
 
-use super::{EventBusBackend, FromEventData, IntoEventData};
+use super::{EventBusBackend, EventMetadata, FromEventData, ToEventData, ToEventDataError};
 
 pub struct EventBus {
   backend: Mutex<Box<dyn EventBusBackend + Send>>
@@ -14,11 +14,15 @@ impl EventBus {
     }
   }
 
-  pub async fn subscribe<Event, Handler, Future>(&self, id: String, handler: Handler)
-  where
-    Event: super::Event + FromEventData + Sized + Send + Sync,
+  pub async fn manual_subscribe<Model, Handler, Future>(
+    &self,
+    id: String,
+    metadata: EventMetadata,
+    handler: Handler
+  ) where
+    Model: FromEventData + Sized + Send + Sync,
     Future: std::future::Future<Output = Result<()>> + Sync + Send + 'static,
-    Handler: Fn(Event) -> Future + Send + Sync + Clone + 'static
+    Handler: Fn(Model) -> Future + Send + Sync + Clone + 'static
   {
     self
       .backend
@@ -26,28 +30,47 @@ impl EventBus {
       .await
       .subscribe(
         id,
-        Event::metadata(),
+        metadata,
         Box::new(move |data| {
           let cloned = handler.clone();
           Box::pin(async move {
-            let event = Event::from_event_data(&data)?;
+            let event = Model::from_event_data(&data)?;
             cloned(event).await?;
             Ok(())
           })
         })
       )
-      .await;
+      .await
   }
 
-  pub async fn publish<Event>(&self, event: Event)
+  pub async fn subscribe<Event, Handler, Future>(&self, id: String, handler: Handler)
   where
-    Event: super::Event + IntoEventData
+    Event: super::Event + FromEventData + Sized + Send + Sync,
+    Future: std::future::Future<Output = Result<()>> + Sync + Send + 'static,
+    Handler: Fn(Event) -> Future + Send + Sync + Clone + 'static
   {
-    let data = event.into_event_data().unwrap();
+    self.manual_subscribe(id, Event::metadata(), handler).await
+  }
+
+  pub async fn manual_publish(
+    &self,
+    metadata: EventMetadata,
+    data: impl ToEventData
+  ) -> Result<(), ToEventDataError> {
+    let data = data.to_event_data()?;
 
     let lock_fut = self.backend.lock();
     let mut backend = lock_fut.await;
-    let publish_fut = backend.publish(Event::metadata(), &data);
+    let publish_fut = backend.publish(metadata, &data);
     publish_fut.await;
+
+    Ok(())
+  }
+
+  pub async fn publish<Event>(&self, event: Event) -> Result<(), ToEventDataError>
+  where
+    Event: super::Event + ToEventData
+  {
+    self.manual_publish(Event::metadata(), event).await
   }
 }

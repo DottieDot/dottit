@@ -5,6 +5,7 @@ use lapin::{
   options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions},
   Channel, Connection, Consumer, ExchangeKind
 };
+use log::error;
 use shared_service::messaging::{
   ConsumeOptions, EventBusBackend, EventExchangeType, EventMetadata, ExchangeMetadata,
   ExchangeOptions, QueueOptions, RawEventHandler
@@ -153,14 +154,26 @@ impl EventBusBackend for AmqpEventBusBackend {
 
     self.runtime.spawn(async move {
       while let Some(delivery) = consumer.next().await {
-        let delivery = delivery.unwrap();
+        let delivery = match delivery {
+          Ok(d) => d,
+          Err(e) => {
+            error!("Faulty amqp delivery: {e}");
+            continue;
+          }
+        };
         let acker = delivery.acker;
         let data = delivery.data;
 
         let fut = handler(data);
         match fut.await {
-          Ok(()) => acker.ack(Default::default()).await.unwrap(),
-          Err(_) => {}
+          Ok(()) => {
+            if let Err(e) = acker.ack(Default::default()).await {
+              error!("Acknowledgement failed: {e}")
+            }
+          }
+          Err(e) => {
+            error!("Error while handling event: {e}")
+          }
         }
       }
     });
