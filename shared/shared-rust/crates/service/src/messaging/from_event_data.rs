@@ -10,7 +10,7 @@ where
   T: DeserializeOwned
 {
   fn from_event_data(data: &[u8]) -> Result<Self, FromEventDataError> {
-    Ok(serde_json::from_slice(&data)?)
+    Ok(serde_json::from_slice(data)?)
   }
 }
 

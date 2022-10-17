@@ -119,7 +119,7 @@ impl AmqpEventBusBackend {
     self
       .channel
       .basic_consume(
-        &queue_name,
+        queue_name,
         Uuid::new_v4().to_string().as_str(),
         BasicConsumeOptions {
           no_local,
@@ -145,12 +145,10 @@ impl EventBusBackend for AmqpEventBusBackend {
     let new_queue_name = &format!("{}.{queue_name}", metadata.exchange.name);
 
     self.declare_exchange(metadata.exchange).await;
-    self.declare_queue(&new_queue_name, metadata).await;
-    self.bind_queue(&new_queue_name, metadata).await;
+    self.declare_queue(new_queue_name, metadata).await;
+    self.bind_queue(new_queue_name, metadata).await;
 
-    let mut consumer = self
-      .consume(&new_queue_name, metadata.consume_options)
-      .await;
+    let mut consumer = self.consume(new_queue_name, metadata.consume_options).await;
 
     self.runtime.spawn(async move {
       while let Some(delivery) = consumer.next().await {
@@ -188,7 +186,7 @@ impl EventBusBackend for AmqpEventBusBackend {
         metadata.exchange.name,
         metadata.queue.routing_key,
         Default::default(),
-        &data,
+        data,
         Default::default()
       )
       .await
