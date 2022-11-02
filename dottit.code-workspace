@@ -20,6 +20,9 @@
     },
     {
       "path": "services/web-service"
+    },
+    {
+      "path": "services/mediator"
     }
   ]
 }

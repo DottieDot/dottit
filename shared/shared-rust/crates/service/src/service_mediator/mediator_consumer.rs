@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::{future::Future, sync::Arc};
 
 use crate::{
-  events::{self, MEDIATOR_EXCHANGE},
+  events::{self, MediatorResponse, MEDIATOR_EXCHANGE},
   messaging::{EventBus, EventMetadata, FromEventData, QueueMetadata, ToEventData}
 };
 
@@ -42,6 +42,11 @@ impl MediatorConsumer {
             let fut = cloned_handler(event_data);
             let result = fut.await?;
 
+            let response = MediatorResponse {
+              query_id: data.query_id,
+              data:     result.to_event_data()?
+            };
+
             event_bus
               .manual_publish(
                 EventMetadata {
@@ -53,7 +58,7 @@ impl MediatorConsumer {
                   },
                   consume_options: Default::default()
                 },
-                result
+                response
               )
               .await?;
 

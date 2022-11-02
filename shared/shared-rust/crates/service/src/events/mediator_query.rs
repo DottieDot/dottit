@@ -1,11 +1,31 @@
 use binary_reader::BinaryReader;
 
-use crate::messaging::{FromEventData, FromEventDataError};
+use crate::messaging::{FromEventData, FromEventDataError, ToEventData};
 
+#[derive(Clone)]
 pub struct MediatorQuery {
   pub return_address: String,
   pub query_id:       String,
   pub data:           Vec<u8>
+}
+
+impl From<MediatorQuery> for Vec<u8> {
+  fn from(query: MediatorQuery) -> Self {
+    [
+      query.return_address.into_bytes(),
+      vec![0],
+      query.query_id.into_bytes(),
+      vec![0],
+      query.data
+    ]
+    .concat()
+  }
+}
+
+impl ToEventData for MediatorQuery {
+  fn to_event_data(&self) -> Result<Vec<u8>, crate::messaging::ToEventDataError> {
+    Ok(Vec::<u8>::from(self.clone()))
+  }
 }
 
 impl FromEventData for MediatorQuery {

@@ -14,10 +14,10 @@ impl EventBus {
     }
   }
 
-  pub async fn manual_subscribe<Model, Handler, Future>(
+  pub async fn manual_subscribe<'a, Model, Handler, Future>(
     &self,
     id: String,
-    metadata: EventMetadata<'static>,
+    metadata: EventMetadata<'a>,
     handler: Handler
   ) where
     Model: FromEventData + Sized + Send + Sync,
