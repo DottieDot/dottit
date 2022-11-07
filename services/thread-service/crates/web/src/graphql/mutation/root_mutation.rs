@@ -5,10 +5,10 @@ use service::services::traits::{CreateThreadError, DeleteThreadError, ThreadServ
 
 use crate::graphql::query::ThreadQuery;
 
-pub struct RootMutation;
+pub struct Mutation;
 
 #[Object]
-impl RootMutation {
+impl Mutation {
   pub async fn create_thread(
     &self,
     ctx: &Context<'_>,

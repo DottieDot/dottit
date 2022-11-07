@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  labels:
+    app: dottit
+    service: gateway-service
+spec:
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: gateway-service
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: APOLLO_ROUTER_SUPERGRAPH_PATH
+              value: ./supergraph.graphql
+            - name: APOLLO_ROUTER_CONFIG_PATH
+              value: ./router.yml
+            - name: APOLLO_ROUTER_LOG
+              value: debug
+            - name: APOLLO_TELEMETRY_DISABLED
+              value: "1"
+            - name: APOLLO_ELV2_LICENSE
+              value: "accept"
+      # initContainers:
+      #   - name: wait-for-thread-service
+      #     image: busybox:1.31
+      #     command:
+      #       [
+      #         "sh",
+      #         "-c",
+      #         'until curl "http://thread-service/readiness"; do echo \"waiting for thread-service\";  sleep 2; done;',
+      #       ]

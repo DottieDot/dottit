@@ -1,4 +1,4 @@
-use async_graphql::Object;
+use async_graphql::{Object, ID};
 use model::models::Thread;
 
 pub struct ThreadQuery {
@@ -7,8 +7,8 @@ pub struct ThreadQuery {
 
 #[Object]
 impl ThreadQuery {
-  async fn id(&self) -> String {
-    self.thread.id.clone()
+  async fn thread_id(&self) -> ID {
+    self.thread.id.clone().into()
   }
 
   async fn board(&self) -> String {
