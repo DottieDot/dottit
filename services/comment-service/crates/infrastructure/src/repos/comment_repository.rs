@@ -44,8 +44,10 @@ impl CommentRepoTrait for CommentRepository {
     thread_id: &UuidStr,
     pagination: Pagination
   ) -> RepositoryResult<PagedResult<Comment>> {
+    let thread_uuid = Uuid::parse_str(thread_id).unwrap();
+
     let query_result = DbComment::find()
-      .filter(comment::Column::ThreadId.eq(thread_id))
+      .filter(comment::Column::ThreadId.eq(thread_uuid))
       .order_by_desc(comment::Column::Score)
       .offset(pagination.first)
       .limit(pagination.count + 1)

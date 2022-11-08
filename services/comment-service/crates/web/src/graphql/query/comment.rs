@@ -1,18 +1,27 @@
 use async_graphql::{Object, ID};
 use service::models::dtos::CommentDto;
 
-pub struct CommentQuery {
+use super::thread::Thread;
+
+#[derive(Debug)]
+pub struct Comment {
   comment: CommentDto
 }
 
 #[Object]
-impl CommentQuery {
+impl Comment {
   async fn id(&self) -> ID {
     self.comment.id.clone().into()
   }
 
   async fn thread_id(&self) -> ID {
     ID::from(&self.comment.thread_id)
+  }
+
+  async fn thread(&self) -> Thread {
+    Thread {
+      id: self.comment.thread_id.clone().into()
+    }
   }
 
   async fn user(&self) -> &String {
@@ -28,7 +37,7 @@ impl CommentQuery {
   }
 }
 
-impl From<CommentDto> for CommentQuery {
+impl From<CommentDto> for Comment {
   fn from(comment: CommentDto) -> Self {
     Self { comment }
   }

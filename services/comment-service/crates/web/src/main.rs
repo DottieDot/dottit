@@ -45,7 +45,7 @@ async fn main() {
   db.migrate().await;
 
   // event bus
-  let _ = event_bus::connect().await;
+  // let _ = event_bus::connect().await;
 
   // services
   let comment_repo = Arc::new(CommentRepository::new(db.connection().clone()));

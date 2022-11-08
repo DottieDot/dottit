@@ -1,5 +1,7 @@
-mod comment_query;
+mod comment;
+mod paged;
 mod root_query;
+mod thread;
 
-pub use comment_query::*;
+pub use comment::*;
 pub use root_query::*;

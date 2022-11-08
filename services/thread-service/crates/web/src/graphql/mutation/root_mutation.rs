@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_graphql::{Context, Object, ID};
 use service::services::traits::{CreateThreadError, DeleteThreadError, ThreadService};
 
-use crate::graphql::query::ThreadQuery;
+use crate::graphql::query::Thread;
 
 pub struct Mutation;
 
@@ -17,13 +17,13 @@ impl Mutation {
     title: String,
     text: Option<String>,
     media: Option<String>
-  ) -> Result<ThreadQuery, CreateThreadError> {
+  ) -> Result<Thread, CreateThreadError> {
     let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
 
     service
       .create_thread(&board, &user, &title, text.as_deref(), media.as_deref())
       .await
-      .map(ThreadQuery::from)
+      .map(Thread::from)
   }
 
   pub async fn delete_thread(

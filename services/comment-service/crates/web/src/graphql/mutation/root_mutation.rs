@@ -6,7 +6,7 @@ use service::{
   services::traits::{CommentService, CreateCommentError, DeleteCommentError}
 };
 
-use crate::graphql::query::CommentQuery;
+use crate::graphql::query::Comment;
 
 pub struct Mutation;
 
@@ -18,7 +18,7 @@ impl Mutation {
     thread_id: ID,
     user: String,
     text: String
-  ) -> Result<CommentQuery, CreateCommentError> {
+  ) -> Result<Comment, CreateCommentError> {
     let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
 
     service
@@ -28,7 +28,7 @@ impl Mutation {
         text
       })
       .await
-      .map(CommentQuery::from)
+      .map(Comment::from)
   }
 
   pub async fn delete_comment(

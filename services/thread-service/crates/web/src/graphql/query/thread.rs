@@ -1,12 +1,12 @@
 use async_graphql::{Object, ID};
-use model::models::Thread;
+use model::models::Thread as ThreadModel;
 
-pub struct ThreadQuery {
-  thread: Thread
+pub struct Thread {
+  thread: ThreadModel
 }
 
 #[Object]
-impl ThreadQuery {
+impl Thread {
   async fn id(&self) -> ID {
     self.thread.id.clone().into()
   }
@@ -36,8 +36,8 @@ impl ThreadQuery {
   }
 }
 
-impl From<Thread> for ThreadQuery {
-  fn from(thread: Thread) -> Self {
+impl From<ThreadModel> for Thread {
+  fn from(thread: ThreadModel) -> Self {
     Self { thread }
   }
 }
