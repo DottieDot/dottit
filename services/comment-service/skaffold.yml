@@ -3,14 +3,14 @@ kind: Config
 requires:
   - path: "../message-bus"
 build:
-  artifacts:
-    - image: comment-service
-      context: ../../
-      docker:
-        dockerfile: services/comment-service/Dockerfile
-        noCache: false
-        pullParent: false
-        squash: false
+  # artifacts:
+  #   - image: comment-service
+  #     context: ../../
+  #     docker:
+  #       dockerfile: services/comment-service/Dockerfile
+  #       noCache: false
+  #       pullParent: false
+  #       squash: false
   tagPolicy:
     gitCommit: {}
   local:
@@ -21,4 +21,4 @@ deploy:
       # The order is important
       - "./k8s/dev/db/*.pv.yml"
       - "./k8s/dev/db/*.yml"
-      - "./k8s/dev/service/*.yml"
+      # - "./k8s/dev/service/*.yml"

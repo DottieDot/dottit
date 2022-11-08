@@ -1,9 +1,9 @@
-mod guid;
+mod comment;
 mod paged_result;
 mod pagination;
-mod thread;
+mod uuid;
 
-pub use guid::*;
+pub use comment::*;
 pub use paged_result::*;
 pub use pagination::*;
-pub use thread::*;
+pub use uuid::*;

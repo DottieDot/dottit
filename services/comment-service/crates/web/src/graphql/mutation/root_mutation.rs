@@ -1,38 +1,43 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use service::services::traits::{CreateThreadError, DeleteThreadError, ThreadService};
+use service::{
+  models::dtos::CreateCommentDto,
+  services::traits::{CommentService, CreateCommentError, DeleteCommentError}
+};
 
-use crate::graphql::query::ThreadQuery;
+use crate::graphql::query::CommentQuery;
 
 pub struct Mutation;
 
 #[Object]
 impl Mutation {
-  pub async fn create_thread(
+  pub async fn create_comment(
     &self,
     ctx: &Context<'_>,
-    board: String,
+    thread_id: ID,
     user: String,
-    title: String,
-    text: Option<String>,
-    media: Option<String>
-  ) -> Result<ThreadQuery, CreateThreadError> {
-    let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
+    text: String
+  ) -> Result<CommentQuery, CreateCommentError> {
+    let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
 
     service
-      .create_thread(&board, &user, &title, text.as_deref(), media.as_deref())
+      .create_comment(CreateCommentDto {
+        thread_id: thread_id.into(),
+        user,
+        text
+      })
       .await
-      .map(ThreadQuery::from)
+      .map(CommentQuery::from)
   }
 
-  pub async fn delete_thread(
+  pub async fn delete_comment(
     &self,
     ctx: &Context<'_>,
-    thread_id: ID
-  ) -> Result<bool, DeleteThreadError> {
-    let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
+    comment_id: ID
+  ) -> Result<bool, DeleteCommentError> {
+    let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
 
-    service.delete_thread(&thread_id).await.map(|_| true)
+    service.delete_comment(&comment_id).await.map(|_| true)
   }
 }

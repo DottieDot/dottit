@@ -1,4 +1,4 @@
-mod thread_service;
+mod comment_service;
 pub mod traits;
 
-pub use thread_service::*;
+pub use comment_service::*;

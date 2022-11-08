@@ -1,3 +1,3 @@
-mod thread_repository;
+mod comment_repository;
 
-pub use thread_repository::*;
+pub use comment_repository::*;

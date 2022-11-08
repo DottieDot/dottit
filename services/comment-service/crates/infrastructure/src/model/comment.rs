@@ -3,18 +3,14 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "thread")]
+#[sea_orm(table_name = "comment")]
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
-  pub id:    Uuid,
-  pub board: String,
-  pub user:  String,
-  pub title: String,
-  #[sea_orm(column_type = "Text", nullable)]
-  pub text:  Option<String>,
-  #[sea_orm(column_type = "Text", nullable)]
-  pub media: Option<String>,
-  pub score: i32
+  pub id:        Uuid,
+  pub thread_id: Uuid,
+  pub user:      String,
+  pub text:      String,
+  pub score:     i32
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

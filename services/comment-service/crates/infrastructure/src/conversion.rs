@@ -1,20 +1,18 @@
-use super::model::thread;
+use super::model::comment;
 
 use sea_orm::DbErr;
 use service::repos::RepositoryError;
 
-use model::models::Thread;
+use model::models::Comment;
 
-impl From<thread::Model> for Thread {
-  fn from(thread: thread::Model) -> Self {
+impl From<comment::Model> for Comment {
+  fn from(comment: comment::Model) -> Self {
     Self {
-      id:    thread.id.to_string(),
-      board: thread.board,
-      user:  thread.user,
-      title: thread.title,
-      text:  thread.text,
-      media: thread.media,
-      score: thread.score
+      id:        comment.id.to_string(),
+      thread_id: comment.thread_id.to_string(),
+      user:      comment.user,
+      text:      comment.text,
+      score:     comment.score
     }
   }
 }

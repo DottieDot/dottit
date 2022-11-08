@@ -7,11 +7,10 @@ use axum::{
   routing::{get, post},
   Router
 };
-use shared_service::events::ThreadDeletedEvent;
 use std::sync::Arc;
 
-use infrastructure::repos::ThreadRepository;
-use service::services::ThreadService;
+use infrastructure::repos::CommentRepository;
+use service::services::CommentService;
 
 use self::{
   database::Database,
@@ -46,25 +45,13 @@ async fn main() {
   db.migrate().await;
 
   // event bus
-  let event_bus = event_bus::connect().await;
-
-  event_bus
-    .subscribe(
-      "thread_service.thread_deleted".to_owned(),
-      |event: ThreadDeletedEvent| {
-        async move {
-          println!("Thread {} deleted", event.thread_id);
-          Ok(())
-        }
-      }
-    )
-    .await;
+  let _ = event_bus::connect().await;
 
   // services
-  let thread_repo = Arc::new(ThreadRepository::new(db.connection().clone()));
-  let thread_service = Arc::new(ThreadService::new(thread_repo, event_bus.clone()));
+  let comment_repo = Arc::new(CommentRepository::new(db.connection().clone()));
+  let comment_service = Arc::new(CommentService::new(comment_repo));
 
-  let schema = build_schema(thread_service).await;
+  let schema = build_schema(comment_service).await;
 
   // Web
   let router = Router::<axum::body::Body>::new()
