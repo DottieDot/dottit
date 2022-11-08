@@ -1,0 +1,22 @@
+[package]
+name = "infrastructure"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "infrastructure"
+path = "src/lib.rs"
+
+[dependencies]
+sea-orm = { version = "^0", features = [
+  "sqlx-postgres",
+  "runtime-tokio-rustls",
+  "macros",
+] }
+service = { path = "../service" }
+model = { path = "../model" }
+async-trait = "0.1.57"
+dyn-clone = "1.0.9"
+migration = { path = "./migration" }
+lapin = "2.1.1"
+tokio = { version = "1.21.2", features = ["full"] }

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-service
+  labels:
+    app: dottit
+    service: comment-service
+spec:
+  selector:
+    matchLabels:
+      app: comment-service
+  template:
+    metadata:
+      labels:
+        app: comment-service
+    spec:
+      containers:
+        - name: comment-service
+          image: comment-service
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres:password@comment-service-postgres:5432/comment_service"
+            - name: RABBITMQ_HOST
+              value: "message-bus:5672"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: password
+      initContainers:
+        - name: wait-for-comment-service-postgres
+          image: jbergknoff/postgresql-client
+          command:
+            [
+              "sh",
+              "-c",
+              "until pg_isready -h comment-service-postgres; do echo waiting for postgres; sleep 2; done;",
+            ]
