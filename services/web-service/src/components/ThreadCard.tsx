@@ -18,12 +18,10 @@ export interface ThreadCardProps {
 export default function ThreadCard({ thread }: ThreadCardProps) {
   return (
     <Box
-      sx={
-        {
-          p:            2,
-          borderBottom: '4px solid #444' 
-        }
-      }
+      sx={{
+        p:            2,
+        borderBottom: '4px solid #444'
+      }}
     >
       <Typography variant="h5" gutterBottom>
         {thread.title}
@@ -36,65 +34,54 @@ export default function ThreadCard({ thread }: ThreadCardProps) {
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ flex: 1 }}>
           <Box>
-            {
-              thread.user && (
-                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
-                  By 
-                  {' '}
-
-                  {thread.user}
-                </Typography>
-              )
-            }
+            {thread.user && (
+              <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                By
+                {' '}
+                {thread.user}
+              </Typography>
+            )}
           </Box>
 
           <Box
-            sx={
-              {
-                display:       'flex',
-                flexDirection: 'row',
-                gap:           1 
-              }
-            }
+            sx={{
+              display:       'flex',
+              flexDirection: 'row',
+              gap:           1
+            }}
           >
             <Typography
               color="text.secondary"
-              sx={
-                {
-                  fontSize:   14,
-                  alignItems: 'center',
-                  display:    'inline-flex' 
-                }
-              }
+              sx={{
+                fontSize:   14,
+                alignItems: 'center',
+                display:    'inline-flex'
+              }}
             >
-              {thread.score} <UpvoteIcon fontSize="inherit" sx={{ ml: .2 }} />
+              {thread.score}
+              <UpvoteIcon fontSize="inherit" sx={{ ml: .2 }} />
             </Typography>
 
             <Typography
               color="text.secondary"
-              sx={
-                {
-                  fontSize:   14,
-                  alignItems: 'center',
-                  display:    'inline-flex' 
-                }
-              }
+              sx={{
+                fontSize:   14,
+                alignItems: 'center',
+                display:    'inline-flex'
+              }}
             >
-              0 
+              0
               {' '}
-
               <CommentsIcon fontSize="inherit" sx={{ ml: .2 }} />
             </Typography>
           </Box>
         </Box>
 
         <Box
-          sx={
-            {
-              display:    'flex',
-              alignItems: 'center' 
-            }
-          }
+          sx={{
+            display:    'flex',
+            alignItems: 'center'
+          }}
         >
           <IconButton size="small">
             <MoreIcon fontSize="small" />

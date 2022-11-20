@@ -10,3 +10,6 @@ export * from './ThreadFeed'
 
 export { default as ThreadCard } from './ThreadCard'
 export * from './ThreadCard'
+
+export { default as SettingsProvider } from './SettingsProvider'
+export * from './SettingsProvider'

@@ -49,11 +49,9 @@ export default function ThreadFeed({ board }: PostFeedProps) {
 
   return (
     <div>
-      {
-        threads.map(thread => (
-          <ThreadCard key={thread.id} thread={thread} />
-        ))
-      }
+      {threads.map(thread => (
+        <ThreadCard key={thread.id} thread={thread} />
+      ))}
     </div>
   )
 }

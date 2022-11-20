@@ -1,0 +1,16 @@
+{
+  "name": "Dottit Schema",
+  "schemaPath": "./dottit.graphql",
+  "extensions": {
+    "endpoints": {
+      "gatway-service": {
+        "url": "http://127.0.0.1:53083/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL",
+          "accept": "*/*"
+        },
+        "introspect": true
+      }
+    }
+  }
+}
