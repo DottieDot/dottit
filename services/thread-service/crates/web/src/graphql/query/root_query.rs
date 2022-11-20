@@ -1,14 +1,33 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use service::services::traits::{GetThreadByIdError, ThreadService};
+use model::models::Pagination;
+use service::services::traits::{GetThreadByIdError, GetThreadsByBoardError, ThreadService};
 
-use super::Thread;
+use super::{Paged, Thread};
 
 pub struct Query;
 
 #[Object]
 impl Query {
+  async fn get_threads_by_board(
+    &self,
+    ctx: &Context<'_>,
+    board: String,
+    first: u64,
+    count: u64
+  ) -> Result<Paged<Thread>, GetThreadsByBoardError> {
+    let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
+
+    Ok(
+      service
+        .get_threads_by_board(&board, Pagination { first, count })
+        .await?
+        .inner_into::<Thread>()
+        .into()
+    )
+  }
+
   async fn get_thread_by_id(
     &self,
     ctx: &Context<'_>,

@@ -5,6 +5,7 @@ subgraphs:
     routing_url: http://thread-service:80/graphql
     schema:
       subgraph_url: http://thread-service:80/graphql
+
   comment-service:
     routing_url: http://comment-service:80/graphql
     schema:

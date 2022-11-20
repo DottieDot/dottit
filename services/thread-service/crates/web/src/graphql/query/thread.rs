@@ -1,6 +1,7 @@
 use async_graphql::{Object, ID};
 use model::models::Thread as ThreadModel;
 
+#[derive(Debug)]
 pub struct Thread {
   thread: ThreadModel
 }

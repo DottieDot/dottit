@@ -1,5 +1,6 @@
 supergraph:
   listen: 0.0.0.0:8080
+  path: /graphql
   introspection: true
 
 sandbox:
@@ -7,3 +8,6 @@ sandbox:
 
 homepage:
   enabled: false
+
+cors:
+  allow_any_origin: true
