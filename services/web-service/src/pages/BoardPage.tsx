@@ -6,7 +6,7 @@ import { memo, useCallback, useState } from 'react'
 import { NewThreadDialog } from '../dialogs'
 
 function BoardPage() {
-  const { board } = useParams<{ board: string }>()
+  const { board } = useParams<{ board: string, thread: string }>()
   const [ newThread, setNewThread ] = useState(false)
 
   const handleNewThread = useCallback(() => {
@@ -18,7 +18,11 @@ function BoardPage() {
 
   return (
     <Grid sx={{ height: '100%' }} container>
-      <NewThreadDialog onClose={setNewThread} open={newThread} />
+      <NewThreadDialog
+        board={board}
+        onClose={setNewThread}
+        open={newThread}
+      />
 
       <Grid
         md={4}
@@ -31,12 +35,19 @@ function BoardPage() {
       >
         <Box
           sx={{
-            overflowY: 'auto',
-            height:    '100%'
+            overflowY:        'auto',
+            height:           '100%',
+            display:          'grid',
+            gridTemplateRows: 'auto 1fr'
           }}
         >
-          <BoardHeader board={board} />
-          <ThreadFeed board={board} />
+          <div>
+            <BoardHeader board={board} />
+          </div>
+
+          <div>
+            <ThreadFeed board={board} />
+          </div>
         </Box>
 
         <Fab
