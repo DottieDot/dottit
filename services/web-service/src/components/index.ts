@@ -13,3 +13,6 @@ export * from './ThreadCard'
 
 export { default as SettingsProvider } from './SettingsProvider'
 export * from './SettingsProvider'
+
+export { default as ThreadView } from './ThreadView'
+export * from './ThreadView'

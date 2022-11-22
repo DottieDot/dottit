@@ -1,5 +1,5 @@
 import { Box, Fab, Grid } from '@mui/material'
-import { BoardHeader, ThreadFeed } from '../components'
+import { BoardHeader, ThreadFeed, ThreadView } from '../components'
 import { Add as NewThreadIcon } from '@mui/icons-material'
 import { useParams } from 'react-router'
 import { memo, useCallback, useState } from 'react'
@@ -71,7 +71,7 @@ function BoardPage() {
         xs={0}
         item
       >
-
+        <ThreadView />
       </Grid>
     </Grid>
   )
