@@ -1,6 +1,5 @@
-import { Box, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import Glass from './Glass'
-import { Fragment } from 'react'
 
 export interface BoardHeaderProps {
   board: string

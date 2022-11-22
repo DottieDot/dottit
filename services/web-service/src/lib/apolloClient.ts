@@ -1,22 +1,31 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 import { Pagination } from '../model'
 
+function paginationMerger(existing: Pagination<unknown> | undefined, incoming: Pagination<unknown>) {
+  return {
+    next:  incoming.next,
+    items: [
+      ...(existing?.items ?? []),
+      ...incoming.items
+    ]
+  }
+}
+
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
         getThreadsByBoard: {
           keyArgs: [ 'board' ],
-
-          merge(existing: Pagination<unknown> | undefined, incoming: Pagination<unknown>) {
-            return {
-              next:  incoming.next,
-              items: [
-                ...(existing?.items ?? []),
-                ...incoming.items
-              ]
-            }
-          }
+          merge:   paginationMerger
+        }
+      }
+    },
+    Thread: {
+      fields: {
+        comments: {
+          keyArgs: false,
+          merge:   paginationMerger
         }
       }
     }

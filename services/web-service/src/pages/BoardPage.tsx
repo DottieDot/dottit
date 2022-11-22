@@ -8,9 +8,14 @@ import { NewThreadDialog } from '../dialogs'
 function BoardPage() {
   const { board } = useParams<{ board: string, thread: string }>()
   const [ newThread, setNewThread ] = useState(false)
+  const [ selectedThread, setSelectedThread ] = useState<string|null>(null)
 
   const handleNewThread = useCallback(() => {
     setNewThread(true)
+  }, [])
+
+  const handleThreadSelected = useCallback((threadId: string) => {
+    setSelectedThread(threadId)
   }, [])
 
 
@@ -46,7 +51,10 @@ function BoardPage() {
           </div>
 
           <div>
-            <ThreadFeed board={board} />
+            <ThreadFeed
+              board={board}
+              onThreadSelected={handleThreadSelected}
+            />
           </div>
         </Box>
 
@@ -67,11 +75,15 @@ function BoardPage() {
 
       <Grid
         md={8}
-        sx={{ borderLeft: '2px solid #444' }}
+        sx={{
+          borderLeft: '2px solid #444',
+          height:     '100%',
+          overflowX:  'auto'
+        }}
         xs={0}
         item
       >
-        <ThreadView />
+        <ThreadView threadId={selectedThread} />
       </Grid>
     </Grid>
   )

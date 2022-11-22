@@ -2,16 +2,17 @@ import { useQuery } from '@apollo/client'
 import ThreadCard from '../ThreadCard'
 import { query, RequestVariables, ResponseData } from './api'
 import AutoSizer from 'react-virtualized-auto-sizer'
-import { useCallback, useMemo, useRef } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
 import DynamicSizeList from '../DynamicSizeList'
 import { Box, LinearProgress } from '@mui/material'
 import { ListOnScrollProps, VariableSizeList } from 'react-window'
 
 interface PostFeedProps {
-  board: string
+  board: string,
+  onThreadSelected: (threadId: string) => void
 }
 
-export default function ThreadFeed({ board }: PostFeedProps) {
+function ThreadFeed({ board, onThreadSelected }: PostFeedProps) {
   const ref = useRef<VariableSizeList>(null)
   const { data, loading, fetchMore } = useQuery<ResponseData, RequestVariables>(query, {
     variables: {
@@ -75,7 +76,7 @@ export default function ThreadFeed({ board }: PostFeedProps) {
             onScroll={handleScroll}
             ref={ref}
             renderItem={(index) => (
-              <ThreadCard thread={threads[index]} />
+              <ThreadCard onClick={onThreadSelected} thread={threads[index]} />
             )}
             width={width}
           />
@@ -84,3 +85,6 @@ export default function ThreadFeed({ board }: PostFeedProps) {
     </Box>
   )
 }
+
+export default memo(ThreadFeed)
+

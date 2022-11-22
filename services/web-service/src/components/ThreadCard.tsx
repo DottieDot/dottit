@@ -1,5 +1,6 @@
-import { Box, IconButton, Typography } from '@mui/material'
-import { North as UpvoteIcon, ChatBubbleOutline as CommentsIcon, South as DownvoteIcon, MoreHoriz as MoreIcon } from '@mui/icons-material'
+import { Box, ButtonBase, IconButton, Typography } from '@mui/material'
+import { North as UpvoteIcon, ChatBubbleOutline as CommentsIcon, South as DownvoteIcon } from '@mui/icons-material'
+import { memo, useCallback } from 'react'
 
 export interface ThreadCardThread {
   id: string
@@ -12,15 +13,24 @@ export interface ThreadCardThread {
 }
 
 export interface ThreadCardProps {
-  thread: ThreadCardThread
+  thread: ThreadCardThread,
+  onClick: (threadId: string) => void
 }
 
-export default function ThreadCard({ thread }: ThreadCardProps) {
+function ThreadCard({ thread, onClick }: ThreadCardProps) {
+  const handleClick = useCallback(() => {
+    onClick(thread.id)
+  }, [ onClick, thread.id ])
+
   return (
-    <Box
+    <ButtonBase
+      component={Box}
+      onClick={handleClick}
       sx={{
         p:            2,
-        borderBottom: '4px solid #444'
+        borderBottom: '4px solid #444',
+        width:        '100%',
+        display:      'block'
       }}
     >
       <Typography variant="h5" gutterBottom>
@@ -84,10 +94,6 @@ export default function ThreadCard({ thread }: ThreadCardProps) {
           }}
         >
           <IconButton size="small">
-            <MoreIcon fontSize="small" />
-          </IconButton>
-
-          <IconButton size="small">
             <UpvoteIcon fontSize="small" />
           </IconButton>
 
@@ -96,6 +102,8 @@ export default function ThreadCard({ thread }: ThreadCardProps) {
           </IconButton>
         </Box>
       </Box>
-    </Box>
+    </ButtonBase>
   )
 }
+
+export default memo(ThreadCard)

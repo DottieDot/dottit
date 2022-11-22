@@ -16,3 +16,12 @@ export * from './SettingsProvider'
 
 export { default as ThreadView } from './ThreadView'
 export * from './ThreadView'
+
+export { default as ThreadHeader } from './ThreadHeader'
+export * from './ThreadHeader'
+
+export { default as Comment } from './Comment'
+export * from './Comment'
+
+export { default as VisibilityTrigger } from './VisibilityTrigger'
+export * from './VisibilityTrigger'

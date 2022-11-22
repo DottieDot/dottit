@@ -1,8 +1,9 @@
 import { memo } from 'react'
 import SelectAThread from './SelectAThread'
+import Thread from './Thread'
 
 export interface ThreadViewProps {
-  threadId?: string
+  threadId?: string | null
 }
 
 function ThreadView({ threadId }: ThreadViewProps) {
@@ -13,9 +14,7 @@ function ThreadView({ threadId }: ThreadViewProps) {
   }
 
   return (
-    <div>
-      Hello!
-    </div>
+    <Thread threadId={threadId} />
   )
 }
 
