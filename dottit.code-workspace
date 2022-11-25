@@ -19,6 +19,12 @@
       "path": "services/thread-service"
     },
     {
+      "path": "services/user-service"
+    },
+    {
+      "path": "services/authorization-service"
+    },
+    {
       "path": "services/web-service"
     },
     {

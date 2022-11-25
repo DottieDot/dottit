@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    app: dottit
+    service: user-service
+spec:
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres:password@user-service-postgres:5432/user_service"
+            - name: RABBITMQ_HOST
+              value: "message-bus:5672"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: password
+      initContainers:
+        - name: wait-for-user-service-postgres
+          image: jbergknoff/postgresql-client
+          command:
+            [
+              "sh",
+              "-c",
+              "until pg_isready -h user-service-postgres; do echo waiting for postgres; sleep 2; done;",
+            ]

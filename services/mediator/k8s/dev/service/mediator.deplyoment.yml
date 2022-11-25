@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediator
+  labels:
+    app: dottit
+    service: mediator
+spec:
+  selector:
+    matchLabels:
+      app: mediator
+  template:
+    metadata:
+      labels:
+        app: mediator
+    spec:
+      containers:
+        - name: mediator
+          image: mediator
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: RABBITMQ_HOST
+              value: "message-bus:5672"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: message-bus-default-user
+                  key: password

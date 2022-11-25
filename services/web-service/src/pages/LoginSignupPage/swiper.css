@@ -1,0 +1,10 @@
+/* no idea why these style overrides are necessary */
+
+.swiper-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.swiper-slide {
+    flex: none
+}

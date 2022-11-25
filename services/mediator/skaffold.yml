@@ -1,0 +1,22 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+requires:
+  - path: "../message-bus"
+build:
+  artifacts:
+    - image: mediator
+      context: ../../
+      docker:
+        dockerfile: services/mediator/Dockerfile
+        noCache: false
+        pullParent: false
+        squash: false
+  tagPolicy:
+    gitCommit: {}
+  local:
+    useBuildkit: false
+deploy:
+  kubectl:
+    manifests:
+      # The order is important
+      - "./k8s/dev/service/*.yml"

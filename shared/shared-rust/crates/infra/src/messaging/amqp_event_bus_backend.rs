@@ -10,15 +10,14 @@ use shared_service::messaging::{
   ConsumeOptions, EventBusBackend, EventExchangeType, EventMetadata, ExchangeMetadata,
   ExchangeOptions, QueueOptions, RawEventHandler
 };
-use tokio::runtime::Runtime;
+use tokio::runtime::Handle;
 use tokio_stream::StreamExt;
 use uuid::Uuid;
 
 pub struct AmqpEventBusBackend {
   _connection: Connection,
   channel:     Channel,
-  exchanges:   HashSet<String>,
-  runtime:     Runtime
+  exchanges:   HashSet<String> //runtime:     Runtime
 }
 
 impl AmqpEventBusBackend {
@@ -28,8 +27,7 @@ impl AmqpEventBusBackend {
     Self {
       _connection: connection,
       channel,
-      exchanges: Default::default(),
-      runtime: Runtime::new().unwrap()
+      exchanges: Default::default() // runtime: Runtime::new().unwrap()
     }
   }
 }
@@ -150,7 +148,7 @@ impl EventBusBackend for AmqpEventBusBackend {
 
     let mut consumer = self.consume(new_queue_name, metadata.consume_options).await;
 
-    self.runtime.spawn(async move {
+    Handle::current().spawn(async move {
       while let Some(delivery) = consumer.next().await {
         let delivery = match delivery {
           Ok(d) => d,

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authorization-service-redis-pod
+  labels:
+    app: dottit
+    service: authorization-service
+spec:
+  selector:
+    matchLabels:
+      app: authorization-service-redis-pod
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: authorization-service-redis-pod
+    spec:
+      containers:
+        - image: redis:7.0.5
+          name: authorization-service-redis
+          command:
+            - redis-server
+            - "/redis-master/redis.conf"
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: 500m
+          # livenessProbe:
+          #   exec:
+          #     command: ["pg_isready"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          # readinessProbe:
+          #   exec:
+          #     # Check we can execute queries over TCP (skip-networking is off).
+          #     command: ["pg_isready"]
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 2
+          #   timeoutSeconds: 1
+          env:
+            - name: MASTER
+              value: "true"
+          ports:
+            - containerPort: 6379
+              name: redis
+          volumeMounts:
+            - name: redis-persistent-storage
+              mountPath: /redis-master-data
+            - name: redis-config
+              mountPath: /redis-master
+      volumes:
+        - name: redis-persistent-storage
+          persistentVolumeClaim:
+            claimName: authorization-service-redis-pv-claim
+        - name: redis-config
+          configMap:
+            name: authorization-service-redis-config
+            items:
+              - key: redis-config
+                path: redis.conf

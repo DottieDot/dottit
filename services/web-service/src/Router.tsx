@@ -1,5 +1,5 @@
 import { RouterProvider } from 'react-router'
-import { BoardPage } from './pages'
+import { BoardPage, LoginSignupPage } from './pages'
 import { createBrowserRouter } from 'react-router-dom'
 
 function Router() {
@@ -9,10 +9,14 @@ function Router() {
       element:  <BoardPage />,
       children: [
         {
-          path:    'thread/:thread',
+          path:    't/:thread',
           element: <BoardPage />
         }
       ]
+    },
+    {
+      path:    '/login',
+      element: <LoginSignupPage />
     }
   ])
 

@@ -1,0 +1,30 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: user-service-postgres-pv
+  labels:
+    type: local
+    app: dottit
+    service: user-service
+  annotations:
+    pv.beta.kubernetes.io/gid: "1234"
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/user-service/postgres"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-service-postgres-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

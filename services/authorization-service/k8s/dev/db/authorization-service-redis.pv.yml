@@ -1,0 +1,30 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: authorization-service-redis-pv
+  labels:
+    type: local
+    app: dottit
+    service: authorization-service
+  annotations:
+    pv.beta.kubernetes.io/gid: "1234"
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/authorization-service/redis"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: authorization-service-redis-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

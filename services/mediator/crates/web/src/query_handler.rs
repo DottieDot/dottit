@@ -40,6 +40,8 @@ impl QueryHandler {
   pub async fn handle_query(&self, query: String, body: Vec<u8>) -> Result<Vec<u8>, QueryError> {
     let query_id = Uuid::new_v4();
 
+    println!("Querying {query} with {query_id}");
+
     self
       .event_bus
       .manual_publish(
@@ -61,7 +63,9 @@ impl QueryHandler {
       .await?;
 
     let state = Arc::new(std::sync::Mutex::new(QueryFutureSharedState::new()));
-    self.futures.lock().await.insert(query_id, state.clone());
+    {
+      self.futures.lock().await.insert(query_id, state.clone());
+    }
     let future = QueryFuture::new(state.clone());
 
     match timeout(Duration::from_secs(1), future).await {
@@ -77,6 +81,8 @@ impl QueryHandler {
       .await
       .remove(&Uuid::from_str(&response.query_id).unwrap())
       .expect("response received for non-existent query");
+
+    println!("Response received for {}", response.query_id);
 
     state.lock().unwrap().success(response.data);
   }
@@ -119,10 +125,11 @@ impl Future for QueryFuture {
   type Output = Vec<u8>;
 
   fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> std::task::Poll<Self::Output> {
-    match self.shared_state.lock().unwrap().result.take() {
+    let shared_state = &mut self.shared_state.lock().unwrap();
+    match shared_state.result.take() {
       Some(data) => Ready(data),
       None => {
-        self.shared_state.lock().unwrap().waker = Some(cx.waker().clone());
+        shared_state.waker = Some(cx.waker().clone());
         Pending
       }
     }

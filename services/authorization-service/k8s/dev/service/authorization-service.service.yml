@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorization-service
+  labels:
+    app: dottit
+    service: authorization-service
+spec:
+  selector:
+    app: authorization-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+      protocol: TCP
+  type: LoadBalancer
