@@ -1,4 +1,4 @@
-use model::models::{User, UuidString};
+use user_service_model::models::{User, UuidString};
 
 #[derive(Debug, Clone)]
 pub struct UserDto {

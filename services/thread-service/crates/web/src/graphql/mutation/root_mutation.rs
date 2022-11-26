@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use service::services::traits::{CreateThreadError, DeleteThreadError, ThreadService};
+use thread_service_service::services::traits::{CreateThreadError, DeleteThreadError, ThreadService};
 
 use crate::graphql::query::Thread;
 

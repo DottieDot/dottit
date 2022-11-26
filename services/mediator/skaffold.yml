@@ -7,15 +7,15 @@ build:
     - image: mediator
       context: ../../
       docker:
-        dockerfile: services/mediator/Dockerfile
-        noCache: false
-        pullParent: false
-        squash: false
+        dockerfile: docker/dev/rust-service.Dockerfile
+        buildArgs:
+          BINARY: mediator-web
+          SERVICE: mediator
   tagPolicy:
     gitCommit: {}
   local:
     useBuildkit: true
-    concurrency: 0
+    # concurrency: 0
 deploy:
   kubectl:
     manifests:

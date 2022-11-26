@@ -21,7 +21,7 @@ spec:
           name: user-service-postgres
           resources:
             limits:
-              memory: 1Gi
+              memory: 500Mi
               cpu: 500m
           livenessProbe:
             exec:

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use service::{
+use user_service_service::{
   models::dtos::CreateUserDto,
   services::traits::{CreateUserError, DeleteUserError, UserService}
 };

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_graphql::{EmptySubscription, Schema};
-use service::services::traits::ThreadService;
+use thread_service_service::services::traits::ThreadService;
 
 use super::{mutation::Mutation, query::Query};
 

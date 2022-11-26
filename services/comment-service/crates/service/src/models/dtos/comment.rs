@@ -1,4 +1,4 @@
-use model::models::{Comment, UuidString};
+use comment_service_model::models::{Comment, UuidString};
 
 #[derive(Debug)]
 pub struct CommentDto {

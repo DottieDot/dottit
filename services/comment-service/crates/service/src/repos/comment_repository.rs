@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use model::models::{Comment, PagedResult, Pagination, UuidStr, UuidString};
+use comment_service_model::models::{Comment, PagedResult, Pagination, UuidStr, UuidString};
 
 use super::RepositoryResult;
 

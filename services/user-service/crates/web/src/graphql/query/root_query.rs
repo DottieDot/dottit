@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use service::services::traits::{GetUserByIdError, UserService};
+use user_service_service::services::traits::{GetUserByIdError, UserService};
 
 use super::user::User;
 

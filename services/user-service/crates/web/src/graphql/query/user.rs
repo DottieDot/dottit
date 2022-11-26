@@ -1,5 +1,5 @@
 use async_graphql::{Object, ID};
-use service::models::dtos::UserDto;
+use user_service_service::models::dtos::UserDto;
 
 #[derive(Debug)]
 pub struct User {

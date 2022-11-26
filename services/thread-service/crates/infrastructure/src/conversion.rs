@@ -1,9 +1,9 @@
 use super::model::thread;
 
 use sea_orm::DbErr;
-use service::repos::RepositoryError;
+use thread_service_service::repos::RepositoryError;
 
-use model::models::Thread;
+use thread_service_model::models::Thread;
 
 impl From<thread::Model> for Thread {
   fn from(thread: thread::Model) -> Self {

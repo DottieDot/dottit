@@ -1,14 +1,14 @@
 [package]
-name = "service"
+name = "user-service-service"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "service"
+name = "user_service_service"
 path = "src/lib.rs"
 
 [dependencies]
-model = { path = "../model" }
+user-service-model = { path = "../model" }
 thiserror = "1.0.37"
 async-trait = "0.1.57"
 amiquip = "0.4.2"

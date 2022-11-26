@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use async_graphql::{OutputType, SimpleObject};
-use model::models::PagedResult;
+use comment_service_model::models::PagedResult;
 
 #[derive(SimpleObject)]
 #[graphql(shareable)]

@@ -1,8 +1,0 @@
-[workspace]
-members = [
-  # "./crates/infrastructure",
-  # "./crates/infrastructure/migration",
-  # "./crates/model",
-  "./crates/service",
-  "./crates/web",
-]

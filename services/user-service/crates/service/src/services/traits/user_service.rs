@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use model::models::{UuidStr, UuidString};
+use user_service_model::models::{UuidStr, UuidString};
 use shared_service::service_mediator::MediatorProducerError;
 use std::error::Error as StdError;
 use thiserror::Error;

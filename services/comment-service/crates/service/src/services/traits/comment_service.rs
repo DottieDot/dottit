@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use model::models::{PagedResult, Pagination, UuidStr, UuidString};
+use comment_service_model::models::{PagedResult, Pagination, UuidStr, UuidString};
 use std::error::Error as StdError;
 use thiserror::Error;
 

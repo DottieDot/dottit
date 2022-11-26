@@ -1,10 +1,10 @@
 [package]
-name = "model"
+name = "user-service-model"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "model"
+name = "user_service_model"
 path = "src/lib.rs"
 
 [dependencies]

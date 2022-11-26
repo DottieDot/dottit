@@ -7,15 +7,15 @@ build:
     - image: comment-service
       context: ../../
       docker:
-        dockerfile: services/comment-service/Dockerfile
-        noCache: false
-        pullParent: false
-        squash: false
+        dockerfile: docker/dev/rust-service.Dockerfile
+        buildArgs:
+          BINARY: comment-service-web
+          SERVICE: comment-service
   tagPolicy:
     gitCommit: {}
   local:
     useBuildkit: true
-    concurrency: 0
+    # concurrency: 0
 deploy:
   kubectl:
     manifests:

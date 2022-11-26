@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use dyn_clone::DynClone;
-use model::models::{PagedResult, Pagination, Thread, UuidStr};
+use thread_service_model::models::{PagedResult, Pagination, Thread, UuidStr};
 use std::error::Error as StdError;
 use thiserror::Error;
 

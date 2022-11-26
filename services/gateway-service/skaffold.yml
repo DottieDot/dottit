@@ -8,17 +8,17 @@ requires:
 build:
   artifacts:
     - image: gateway-service
-      context: .
+      context: ../../
       docker:
-        dockerfile: Dockerfile
-        noCache: false
-        pullParent: false
-        squash: false
+        dockerfile: docker/dev/rust-service.Dockerfile
+        buildArgs:
+          BINARY: gateway-service
+          SERVICE: gateway-service
   tagPolicy:
     gitCommit: {}
   local:
     useBuildkit: true
-    concurrency: 0
+    # concurrency: 0
 deploy:
   kubectl:
     manifests:

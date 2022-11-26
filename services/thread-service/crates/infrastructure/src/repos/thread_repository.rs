@@ -5,12 +5,12 @@ use crate::{
   repo_error_from_db_error
 };
 use async_trait::async_trait;
-use model::models::{PagedResult, Pagination, Thread, UuidStr};
+use thread_service_model::models::{PagedResult, Pagination, Thread, UuidStr};
 use sea_orm::{
   prelude::Uuid, ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait,
   QueryFilter, QueryOrder, QuerySelect
 };
-use service::repos::{self, RepositoryError, RepositoryResult};
+use thread_service_service::repos::{self, RepositoryError, RepositoryResult};
 
 #[derive(Clone)]
 pub struct ThreadRepository {

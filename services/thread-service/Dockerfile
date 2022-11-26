@@ -1,77 +1,30 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1.64.0 AS chef
+# THIS DOCKER FILE'S CONTEXT IS THE PROJECT ROOT
+
+FROM rust:1.65
+
 WORKDIR /app
 
-#####################################
-# PLAN                              #
-#####################################
-FROM chef AS planner
+# Copy general relevant files
+COPY ./rust-toolchain.toml .
+COPY ./rustfmt.toml .
+COPY ./Cargo.lock .
+COPY ./Cargo.toml .
+COPY ./shared/shared-rust ./shared/shared-rust
 
-############
-# Shared   #
-############
-WORKDIR /app/shared/shared-rust
-COPY ./shared/shared-rust .
+RUN rustup component add rustfmt
 
-RUN cargo chef prepare --recipe-path recipe.json
+# Copy support files
+COPY ./docker/support/services ./services
 
-############
-# Service  #
-############
-WORKDIR /app/services/thread-service
-COPY ./services/thread-service .
+# Copy service files
+COPY ./services/thread-service ./services/thread-service
 
-RUN cargo chef prepare --recipe-path recipe.json
-
-
-#####################################
-# BUILD                             #
-#####################################
-FROM chef AS builder 
-
-ENV RUST_BACKTRACE=1
-
-############
-# Shared   #
-############
-WORKDIR /app/shared/shared-rust
-
-# Copy toolchain
-COPY ./shared/shared-rust/rust-toolchain.toml . 
-
-# Get cargo chef recipe
-COPY --from=planner /app/shared/shared-rust/recipe.json recipe.json
-
-# Delete cargo cache
-RUN rm -rf ~/.cargo/registry/*
-
-# Build and Cache dependencies
-RUN cargo chef cook --recipe-path recipe.json
-
-# Copy shared crates
-COPY ./shared/shared-rust .
-
-# Build shared crates
-RUN cargo build
-
-############
-# Service  #
-############
-WORKDIR /app/services/thread-service
-
-# Copy toolchain
-COPY ./services/thread-service/rust-toolchain.toml . 
-
-# Get cargo chec recipe
-COPY --from=planner /app/services/thread-service/recipe.json recipe.json
-
-# Build and Cache dependencies
-RUN cargo chef cook --recipe-path recipe.json
-
-# Copy service
-COPY ./services/thread-service .
 
 # Build service
-RUN cargo build --bin web
+RUN \
+  --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/app/target \
+  cargo build \
+  --bin thread-service-web
 
-# Run service
-ENTRYPOINT [ "cargo", "run", "--bin", "web" ]
+ENTRYPOINT [ "cargo", "run", "--bin", "thread-service-web" ]

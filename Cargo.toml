@@ -1,0 +1,8 @@
+[workspace]
+members = [
+  "./services/*/crates/*",
+  "./services/*/crates/infrastructure/migration",
+  "./services/gateway-service/",
+  "./shared/shared-rust/crates/*",
+]
+exclude = ["./services/web-service", "./services/message-bus"]

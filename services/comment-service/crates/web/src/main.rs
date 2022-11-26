@@ -9,8 +9,8 @@ use axum::{
 };
 use std::sync::Arc;
 
-use infrastructure::repos::CommentRepository;
-use service::services::CommentService;
+use comment_service_infrastructure::repos::CommentRepository;
+use comment_service_service::services::CommentService;
 
 use self::{
   database::Database,

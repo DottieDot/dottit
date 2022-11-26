@@ -3,9 +3,9 @@ use crate::{
   repo_error_from_db_error
 };
 use async_trait::async_trait;
-use model::models::{User, UuidStr};
+use user_service_model::models::{User, UuidStr};
 use sea_orm::{prelude::Uuid, ActiveModelTrait, ActiveValue, DatabaseConnection, EntityTrait};
-use service::repos::{RepositoryError, RepositoryResult, UserRepository as UserRepoTrait};
+use user_service_service::repos::{RepositoryError, RepositoryResult, UserRepository as UserRepoTrait};
 use std::sync::Arc;
 
 pub struct UserRepository {

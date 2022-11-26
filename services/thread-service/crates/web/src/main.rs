@@ -10,8 +10,8 @@ use axum::{
 use shared_service::events::ThreadDeletedEvent;
 use std::sync::Arc;
 
-use infrastructure::repos::ThreadRepository;
-use service::services::ThreadService;
+use thread_service_infrastructure::repos::ThreadRepository;
+use thread_service_service::services::ThreadService;
 
 use self::{
   database::Database,

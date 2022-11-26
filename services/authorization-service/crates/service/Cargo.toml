@@ -1,10 +1,10 @@
 [package]
-name = "service"
+name = "authorization-service-service"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "service"
+name = "authorization_service_service"
 path = "src/lib.rs"
 
 [dependencies]

@@ -10,8 +10,8 @@ use axum::{
 use shared_service::service_mediator::MediatorProducer;
 use std::sync::Arc;
 
-use infrastructure::repos::UserRepository;
-use service::services::UserService;
+use user_service_infrastructure::repos::UserRepository;
+use user_service_service::services::UserService;
 
 use self::{
   database::Database,

@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use model::models::Pagination;
-use service::services::traits::{CommentService, GetCommentsByThreadIdError};
+use comment_service_model::models::Pagination;
+use comment_service_service::services::traits::{CommentService, GetCommentsByThreadIdError};
 
 use super::{paged::Paged, Comment};
 

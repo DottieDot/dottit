@@ -1,4 +1,4 @@
-use model::models::UuidString;
+use comment_service_model::models::UuidString;
 
 pub struct CreateCommentDto {
   pub thread_id: UuidString,

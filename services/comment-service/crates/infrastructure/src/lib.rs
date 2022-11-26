@@ -1,4 +1,4 @@
-pub use migration;
+pub use comment_service_migration;
 
 mod conversion;
 pub(crate) mod model;

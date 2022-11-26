@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use model::models::Pagination;
-use service::services::traits::{GetThreadByIdError, GetThreadsByBoardError, ThreadService};
+use thread_service_model::models::Pagination;
+use thread_service_service::services::traits::{GetThreadByIdError, GetThreadsByBoardError, ThreadService};
 
 use super::{Paged, Thread};
 

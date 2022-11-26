@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use model::models::{PagedResult, Pagination, Thread, UuidStr};
+use thread_service_model::models::{PagedResult, Pagination, Thread, UuidStr};
 use shared_service::{events::ThreadDeletedEvent, messaging::EventBus};
 
 use crate::repos::{RepositoryError, ThreadRepository};

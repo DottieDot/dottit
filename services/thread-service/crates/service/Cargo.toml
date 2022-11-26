@@ -1,14 +1,14 @@
 [package]
-name = "service"
+name = "thread-service-service"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "service"
+name = "thread_service_service"
 path = "src/lib.rs"
 
 [dependencies]
-model = { path = "../model" }
+thread-service-model = { path = "../model" }
 thiserror = "1.0.37"
 async-trait = "0.1.57"
 dyn-clone = "1.0.9"

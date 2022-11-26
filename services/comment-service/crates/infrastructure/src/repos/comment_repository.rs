@@ -3,12 +3,12 @@ use crate::{
   repo_error_from_db_error
 };
 use async_trait::async_trait;
-use model::models::{Comment, PagedResult, Pagination, UuidStr, UuidString};
+use comment_service_model::models::{Comment, PagedResult, Pagination, UuidStr, UuidString};
 use sea_orm::{
   prelude::Uuid, ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait,
   QueryFilter, QueryOrder, QuerySelect
 };
-use service::repos::{CommentRepository as CommentRepoTrait, RepositoryError, RepositoryResult};
+use comment_service_service::repos::{CommentRepository as CommentRepoTrait, RepositoryError, RepositoryResult};
 use std::sync::Arc;
 
 pub struct CommentRepository {

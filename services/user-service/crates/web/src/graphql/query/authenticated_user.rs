@@ -1,5 +1,5 @@
 use async_graphql::Object;
-use service::models::dtos::AuthenticatedUserDto;
+use user_service_service::models::dtos::AuthenticatedUserDto;
 
 use super::User;
 

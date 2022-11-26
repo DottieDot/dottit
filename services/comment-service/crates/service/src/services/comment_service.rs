@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use model::models::{PagedResult, Pagination, UuidStr};
+use comment_service_model::models::{PagedResult, Pagination, UuidStr};
 
 use crate::{
   models::dtos::{CommentDto, CreateCommentDto},

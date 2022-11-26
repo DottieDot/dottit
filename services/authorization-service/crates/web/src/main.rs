@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{body::Body, http::StatusCode, response::IntoResponse, routing::get, Router, Server};
-use service::{
+use authorization_service_service::{
   database::AuthTokenDb,
   service::{traits::AuthTokenService as AuthTokenServiceTrait, AuthTokenService}
 };

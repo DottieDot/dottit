@@ -1,9 +1,9 @@
 use super::model::user;
 
 use sea_orm::DbErr;
-use service::repos::RepositoryError;
+use user_service_service::repos::RepositoryError;
 
-use model::models::User;
+use user_service_model::models::User;
 
 impl From<user::Model> for User {
   fn from(user: user::Model) -> Self {

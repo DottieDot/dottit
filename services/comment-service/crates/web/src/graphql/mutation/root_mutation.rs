@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
-use service::{
+use comment_service_service::{
   models::dtos::CreateCommentDto,
   services::traits::{CommentService, CreateCommentError, DeleteCommentError}
 };

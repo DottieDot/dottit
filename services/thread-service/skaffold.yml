@@ -7,15 +7,15 @@ build:
     - image: thread-service
       context: ../../
       docker:
-        dockerfile: services/thread-service/Dockerfile
-        noCache: false
-        pullParent: false
-        squash: false
+        dockerfile: docker/dev/rust-service.Dockerfile
+        buildArgs:
+          BINARY: thread-service-web
+          SERVICE: thread-service
   tagPolicy:
     gitCommit: {}
   local:
     useBuildkit: true
-    concurrency: 0
+    # concurrency: 0
 deploy:
   kubectl:
     manifests:

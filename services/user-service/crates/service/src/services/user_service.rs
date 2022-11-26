@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use model::models::UuidStr;
+use user_service_model::models::UuidStr;
 use shared_service::service_mediator::{
   queries::CreateApiTokenForUserQuery, MediatorProducer, MediatorProducerError
 };

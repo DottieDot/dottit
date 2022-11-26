@@ -1,5 +1,5 @@
 use async_graphql::{Object, ID};
-use service::models::dtos::CommentDto;
+use comment_service_service::models::dtos::CommentDto;
 
 use super::thread::Thread;
 

@@ -1,9 +1,9 @@
 use super::model::comment;
 
 use sea_orm::DbErr;
-use service::repos::RepositoryError;
+use comment_service_service::repos::RepositoryError;
 
-use model::models::Comment;
+use comment_service_model::models::Comment;
 
 impl From<comment::Model> for Comment {
   fn from(comment: comment::Model) -> Self {
