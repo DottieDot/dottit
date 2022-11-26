@@ -1,9 +1,18 @@
+use std::sync::Arc;
+
 use axum::{body::Body, http::StatusCode, response::IntoResponse, routing::get, Router, Server};
+use service::{
+  database::AuthTokenDb,
+  service::{traits::AuthTokenService as AuthTokenServiceTrait, AuthTokenService}
+};
 use shared_service::service_mediator::{
   queries::{ApiTokenForUser, CreateApiTokenForUserQuery},
   MediatorConsumer
 };
 
+use self::database::Database;
+
+mod database;
 mod event_bus;
 
 async fn readiness_probe_handler() -> impl IntoResponse {
@@ -20,12 +29,20 @@ async fn main() {
 
   let consumer = MediatorConsumer::new(event_bus);
 
+  let db_client = Database::connect();
+
+  let auth_token_db = Arc::new(AuthTokenDb::new(db_client.connection().clone()));
+  let auth_token_service = Arc::new(AuthTokenService::new(auth_token_db));
+
   consumer
-    .subscribe(|query: CreateApiTokenForUserQuery| {
+    .subscribe(move |query: CreateApiTokenForUserQuery| {
+      let service = auth_token_service.clone();
       async move {
+        let token = service.create_token_for_user(&query.user_id).await?;
+
         let result = ApiTokenForUser {
           user_id: query.user_id,
-          token:   "Test Token!".to_owned()
+          token
         };
 
         Ok(result)

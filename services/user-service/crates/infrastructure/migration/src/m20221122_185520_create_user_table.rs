@@ -20,11 +20,11 @@ impl MigrationTrait for Migration {
           )
           .col(
             ColumnDef::new(User::Username)
-              .char_len(24)
+              .string()
               .unique_key()
               .not_null()
           )
-          .col(ColumnDef::new(User::PasswordHash).char_len(100).not_null())
+          .col(ColumnDef::new(User::PasswordHash).string().not_null())
           .to_owned()
       )
       .await

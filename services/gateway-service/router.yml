@@ -3,6 +3,16 @@ supergraph:
   path: /graphql
   introspection: true
 
+headers:
+  all:
+    request:
+      - propagate:
+          named: x-user_id
+
+plugins:
+  gateway-service.jwt_validation:
+    auth_server: ${env.AUTH_SERVICE_URL}
+
 sandbox:
   enabled: true
 

@@ -45,13 +45,13 @@ COPY --from=planner /app/shared/shared-rust/recipe.json recipe.json
 RUN rm -rf ~/.cargo/registry/*
 
 # Build and Cache dependencies
-RUN cargo chef cook --recipe-path recipe.json
+RUN --mount=type=cache,target=/usr/local/cargo/registry cargo chef cook --recipe-path recipe.json
 
 # Copy shared crates
 COPY ./shared/shared-rust .
 
 # Build shared crates
-RUN cargo build
+RUN --mount=type=cache,target=/usr/local/cargo/registry cargo build
 
 ############
 # Service  #
@@ -65,13 +65,13 @@ COPY ./services/mediator/rust-toolchain.toml .
 COPY --from=planner /app/services/mediator/recipe.json recipe.json
 
 # Build and Cache dependencies
-RUN cargo chef cook --recipe-path recipe.json
+RUN --mount=type=cache,target=/usr/local/cargo/registry cargo chef cook --recipe-path recipe.json
 
 # Copy service
 COPY ./services/mediator .
 
 # Build service
-RUN cargo build --bin web
+RUN --mount=type=cache,target=/usr/local/cargo/registry cargo build --bin web
 
 # Run service
 ENTRYPOINT [ "cargo", "run", "--bin", "web" ]

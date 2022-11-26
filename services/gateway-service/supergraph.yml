@@ -10,3 +10,8 @@ subgraphs:
     routing_url: http://comment-service:80/graphql
     schema:
       subgraph_url: http://comment-service:80/graphql
+
+  user-service:
+    routing_url: http://user-service:80/graphql
+    schema:
+      subgraph_url: http://user-service:80/graphql

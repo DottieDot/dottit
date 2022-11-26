@@ -10,7 +10,7 @@ pub struct Database {
 impl Database {
   pub async fn connect() -> Self {
     let connection = sea_orm::Database::connect(
-      env::var("DATABASE_URL").expect("DATABAE_URL environment variable not set")
+      env::var("DATABASE_URL").expect("DATABASE_URL environment variable not set")
     )
     .await
     .expect("could not connect to database");

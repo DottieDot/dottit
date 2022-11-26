@@ -3,6 +3,8 @@ kind: Config
 requires:
   - path: "../thread-service"
   - path: "../comment-service"
+  - path: "../user-service"
+  - path: "../authorization-service"
 build:
   artifacts:
     - image: gateway-service
@@ -15,7 +17,8 @@ build:
   tagPolicy:
     gitCommit: {}
   local:
-    useBuildkit: false
+    useBuildkit: true
+    concurrency: 0
 deploy:
   kubectl:
     manifests:

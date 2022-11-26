@@ -31,7 +31,7 @@ impl traits::UserService for UserService {
   }
 
   async fn create_user(&self, dto: CreateUserDto) -> Result<AuthenticatedUserDto, CreateUserError> {
-    let password_hash = dto.password;
+    let password_hash = bcrypt::hash(dto.password, bcrypt::DEFAULT_COST)?;
 
     let user = self.repo.create_user(dto.username, password_hash).await?;
     let token = self
@@ -82,6 +82,12 @@ impl From<RepositoryError> for CreateUserError {
 impl From<MediatorProducerError> for CreateUserError {
   fn from(error: MediatorProducerError) -> Self {
     Self::MediatorError { source: error }
+  }
+}
+
+impl From<bcrypt::BcryptError> for CreateUserError {
+  fn from(error: bcrypt::BcryptError) -> Self {
+    Self::HashError { source: error }
   }
 }
 

@@ -8,3 +8,9 @@ edition = "2021"
 [dependencies]
 apollo-router = "1.2.1"
 anyhow = "1.0.66"
+async-trait = "0.1.58"
+tower = "0.4.13"
+serde = { version = "1.0.147", features = ["derive"] }
+schemars = "0.8.11"
+http = "0.2.8"
+reqwest = "0.11.13"

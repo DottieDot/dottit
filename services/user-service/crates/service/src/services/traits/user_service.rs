@@ -35,7 +35,9 @@ pub enum CreateUserError {
     source: Box<dyn StdError + Send + Sync>
   },
   #[error("mediator request failed: {source}")]
-  MediatorError { source: MediatorProducerError }
+  MediatorError { source: MediatorProducerError },
+  #[error("failed to hash user password: {source}")]
+  HashError { source: bcrypt::BcryptError }
 }
 
 #[derive(Error, Debug)]

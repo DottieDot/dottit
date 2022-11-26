@@ -1,3 +1,5 @@
+mod auth_plugin;
+
 use std::{
   fs::File,
   io::Write,
