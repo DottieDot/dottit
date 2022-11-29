@@ -1,0 +1,13 @@
+[package]
+name = "dottit-shared-web"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "shared_web"
+path = "src/lib.rs"
+
+[dependencies]
+async-graphql = { version = "^4.0.6", features = ["dataloader"] }
+axum = "^0.5.1"
+uuid = "1.2.2"

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::messaging::{Event, EventMetadata, QueueMetadata};
 
@@ -6,7 +7,7 @@ use super::THREAD_EXCHANGE;
 
 #[derive(Serialize, Deserialize)]
 pub struct ThreadDeletedEvent {
-  pub thread_id: String
+  pub thread_id: Uuid
 }
 
 impl Event for ThreadDeletedEvent {

@@ -10,7 +10,7 @@ headers:
           named: x-user_id
 
 plugins:
-  gateway-service.jwt_validation:
+  gateway-service.auth_plugin:
     auth_server: ${env.AUTH_SERVICE_URL}
 
 sandbox:

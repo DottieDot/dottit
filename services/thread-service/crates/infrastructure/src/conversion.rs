@@ -8,13 +8,12 @@ use thread_service_model::models::Thread;
 impl From<thread::Model> for Thread {
   fn from(thread: thread::Model) -> Self {
     Self {
-      id:    thread.id.to_string(),
-      board: thread.board,
-      user:  thread.user,
-      title: thread.title,
-      text:  thread.text,
-      media: thread.media,
-      score: thread.score
+      id:         thread.id,
+      board_id:   thread.board_id,
+      user_id:    thread.user_id,
+      title:      thread.title,
+      text:       thread.text,
+      created_at: thread.created_at.into()
     }
   }
 }

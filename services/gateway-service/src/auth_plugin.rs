@@ -14,7 +14,7 @@ use tower::{BoxError, ServiceBuilder, ServiceExt};
 
 const USER_CONTEXT_PARAM_NAME: &str = "user_id";
 const AUTHORIZATION_HEADER_NAME: &str = "authorization";
-const USER_HEADER_NAME: &str = "x-user_id";
+const USER_HEADER_NAME: &str = "dottit-user-id";
 
 pub struct AuthPlugin {
   state: Arc<AuthPluginState>
@@ -31,18 +31,18 @@ pub struct AuthPluginConfig {
 }
 
 #[derive(Deserialize)]
-struct AuthResponse {
+struct ValidateResponse {
   user_id: String
 }
 
 impl AuthPluginState {
-  async fn validate_api_token(&self, token: &str) -> Result<AuthResponse, BoxError> {
+  async fn validate_api_token(&self, token: &str) -> Result<ValidateResponse, BoxError> {
     let response = self
       .http_client
       .get(format!("{}/validate/{token}", self.auth_server))
       .send()
       .await?
-      .json::<AuthResponse>()
+      .json::<ValidateResponse>()
       .await?;
 
     Ok(response)
@@ -73,7 +73,18 @@ impl Plugin for AuthPlugin {
         let token = match auth_header_value {
           Some(auth_header_value) => {
             let auth_header_value_str = auth_header_value.to_str()?;
-            get_auth_token_from_header_value(auth_header_value_str)
+            match get_auth_token_from_header_value(auth_header_value_str) {
+              Some(token) => token,
+              None => {
+                let error_message = format!("invalid API token format");
+                let response = supergraph::Response::error_builder()
+                  .error(graphql::Error::builder().message(error_message).build())
+                  .status_code(StatusCode::BAD_REQUEST)
+                  .context(request.context)
+                  .build()?;
+                return Ok(ControlFlow::Break(response));
+              }
+            }
           }
           None => return Ok(ControlFlow::Continue(request))
         };
@@ -121,7 +132,11 @@ impl Plugin for AuthPlugin {
   }
 }
 
-fn get_auth_token_from_header_value(auth_header_value: &str) -> &str {
-  let jwt_start_index = "Bearer ".len();
-  &auth_header_value[jwt_start_index..auth_header_value.len()]
+fn get_auth_token_from_header_value(auth_header_value: &str) -> Option<&str> {
+  let bearer_pos = auth_header_value.find("Bearer ");
+  if let Some(start) = bearer_pos {
+    Some(&auth_header_value[start..])
+  } else {
+    None
+  }
 }

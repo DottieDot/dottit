@@ -1,7 +1,4 @@
-use sea_orm_migration::{
-  prelude::*,
-  sea_orm::{ConnectionTrait, Statement}
-};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -9,26 +6,57 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
   async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-    let sql = r#"
-      CREATE TABLE thread
-      (
-          id     UUID         DEFAULT (gen_random_uuid()) NOT NULL,
-          board  VARCHAR(255)                             NOT NULL,
-          "user" VARCHAR(255)                             NOT NULL,
-          title  VARCHAR(255)                             NOT NULL,
-          text   TEXT                                     NULL,
-          media  TEXT                                     NULL,
-          score  int          DEFAULT 0                   NOT NULL,
-          CONSTRAINT threads_pk
-              PRIMARY KEY (id)
-      );"#;
-    let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
-    manager.get_connection().execute(stmt).await.map(|_| ())
+    manager
+      .create_table(
+        Table::create()
+          .table(Thread::Table)
+          .if_not_exists()
+          .col(
+            ColumnDef::new(Thread::Id)
+              .uuid()
+              .primary_key()
+              .not_null()
+              .extra("DEFAULT (gen_random_uuid())".to_owned())
+          )
+          .col(ColumnDef::new(Thread::BoardId).uuid().not_null())
+          .col(ColumnDef::new(Thread::UserId).uuid().not_null())
+          .col(ColumnDef::new(Thread::Title).string().not_null())
+          .col(ColumnDef::new(Thread::Text).string().not_null())
+          .col(
+            ColumnDef::new(Thread::CreatedAt)
+              .timestamp_with_time_zone()
+              .not_null()
+              .extra("DEFAULT CURRENT_TIMESTAMP".to_owned())
+          )
+          .take()
+      )
+      .await?;
+
+    manager
+      .create_index(
+        Index::create()
+          .name("thread_user_index")
+          .table(Thread::Table)
+          .col(Thread::UserId)
+          .take()
+      )
+      .await
   }
 
   async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-    let sql = "DROP TABLE `thread`";
-    let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
-    manager.get_connection().execute(stmt).await.map(|_| ())
+    manager
+      .drop_table(Table::drop().table(Thread::Table).take())
+      .await
   }
+}
+
+#[derive(Iden)]
+enum Thread {
+  Table,
+  Id,
+  BoardId,
+  UserId,
+  Title,
+  Text,
+  CreatedAt
 }

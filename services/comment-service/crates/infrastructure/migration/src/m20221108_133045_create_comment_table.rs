@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
               .not_null()
               .default(0)
           )
-          .to_owned()
+          .take()
       )
       .await?;
 
@@ -37,7 +37,7 @@ impl MigrationTrait for Migration {
           .name("comment_user_index")
           .table(Comment::Table)
           .col(Comment::User)
-          .to_owned()
+          .take()
       )
       .await?;
 
@@ -47,14 +47,14 @@ impl MigrationTrait for Migration {
           .name("comment_thread_index")
           .table(Comment::Table)
           .col(Comment::ThreadId)
-          .to_owned()
+          .take()
       )
       .await
   }
 
   async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
     manager
-      .drop_table(Table::drop().table(Comment::Table).to_owned())
+      .drop_table(Table::drop().table(Comment::Table).take())
       .await
   }
 }

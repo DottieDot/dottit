@@ -1,8 +1,14 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use thread_service_model::models::{PagedResult, Pagination, Thread, UuidStr};
-use shared_service::{events::ThreadDeletedEvent, messaging::EventBus};
+use chrono::{DateTime, Utc};
+use shared_service::{
+  events::ThreadDeletedEvent,
+  messaging::EventBus,
+  model::{Page, Pagination}
+};
+use thread_service_model::models::Thread;
+use uuid::Uuid;
 
 use crate::repos::{RepositoryError, ThreadRepository};
 
@@ -27,51 +33,44 @@ impl ThreadService {
 
 #[async_trait]
 impl traits::ThreadService for ThreadService {
-  async fn get_thread_by_id(&self, id: &UuidStr) -> Result<Thread, GetThreadByIdError> {
+  async fn get_thread_by_id(&self, id: Uuid) -> Result<Thread, GetThreadByIdError> {
     Ok(self.thread_repo.get_thread_by_id(id).await?)
   }
 
   async fn get_threads_by_board(
     &self,
-    board: &str,
-    pagination: Pagination
-  ) -> Result<PagedResult<Thread>, traits::GetThreadsByBoardError> {
+    board_id: Uuid,
+    pagination: Pagination<DateTime<Utc>>
+  ) -> Result<Page<Thread, DateTime<Utc>>, traits::GetThreadsByBoardError> {
     Ok(
       self
         .thread_repo
-        .get_threads_by_board(board, pagination)
+        .get_threads_by_board(board_id, pagination)
         .await?
     )
   }
 
   async fn create_thread(
     &self,
-    board: &str,
-    user: &str,
-    title: &str,
-    text: Option<&str>,
-    media: Option<&str>
+    board_id: Uuid,
+    user_id: Uuid,
+    title: String,
+    text: String
   ) -> Result<Thread, traits::CreateThreadError> {
-    if text.is_none() && media.is_none() {
-      return Err(CreateThreadError::NoConent);
-    }
-
     Ok(
       self
         .thread_repo
-        .create_thread(board, user, title, text, media)
+        .create_thread(board_id, user_id, title, text)
         .await?
     )
   }
 
-  async fn delete_thread(&self, thread_id: &UuidStr) -> Result<(), DeleteThreadError> {
+  async fn delete_thread(&self, thread_id: Uuid) -> Result<(), DeleteThreadError> {
     self.thread_repo.delete_thread(thread_id).await?;
 
     self
       .event_bus
-      .publish(ThreadDeletedEvent {
-        thread_id: thread_id.to_owned()
-      })
+      .publish(ThreadDeletedEvent { thread_id })
       .await
       .unwrap();
 

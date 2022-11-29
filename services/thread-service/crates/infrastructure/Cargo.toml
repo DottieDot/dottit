@@ -15,8 +15,11 @@ sea-orm = { version = "^0.9.0", features = [
 ] }
 thread-service-service = { path = "../service" }
 thread-service-model = { path = "../model" }
+dottit-shared-service = { path = "../../../../shared/shared-rust/crates/service" }
 async-trait = "0.1.57"
 dyn-clone = "1.0.9"
 thread-service-migration = { path = "./migration" }
 lapin = "2.1.1"
 tokio = { version = "1.21.2", features = ["full"] }
+uuid = "1.2.2"
+chrono = "0.4.23"

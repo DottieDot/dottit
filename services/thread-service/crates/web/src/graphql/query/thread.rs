@@ -1,5 +1,7 @@
-use async_graphql::{Object, ID};
+use async_graphql::Object;
+use chrono::{DateTime, Utc};
 use thread_service_model::models::Thread as ThreadModel;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct Thread {
@@ -8,32 +10,28 @@ pub struct Thread {
 
 #[Object]
 impl Thread {
-  async fn id(&self) -> ID {
-    self.thread.id.clone().into()
+  async fn id(&self) -> Uuid {
+    self.thread.id
   }
 
-  async fn board(&self) -> &String {
-    &self.thread.board
+  async fn board(&self) -> Uuid {
+    self.thread.board_id
   }
 
-  async fn user(&self) -> &String {
-    &self.thread.user
+  async fn user(&self) -> Uuid {
+    self.thread.user_id
   }
 
   async fn title(&self) -> &String {
     &self.thread.title
   }
 
-  async fn text(&self) -> &Option<String> {
+  async fn text(&self) -> &String {
     &self.thread.text
   }
 
-  async fn media(&self) -> &Option<String> {
-    &self.thread.media
-  }
-
-  async fn score(&self) -> i32 {
-    self.thread.score
+  async fn created_at(&self) -> DateTime<Utc> {
+    self.thread.created_at
   }
 }
 

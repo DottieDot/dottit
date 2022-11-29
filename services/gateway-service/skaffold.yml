@@ -10,7 +10,7 @@ build:
     - image: gateway-service
       context: ../../
       docker:
-        dockerfile: docker/dev/rust-service.Dockerfile
+        dockerfile: docker/dev/gateway-service.Dockerfile
         buildArgs:
           BINARY: gateway-service
           SERVICE: gateway-service

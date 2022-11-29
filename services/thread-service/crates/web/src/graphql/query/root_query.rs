@@ -1,8 +1,12 @@
 use std::sync::Arc;
 
-use async_graphql::{Context, Object, ID};
-use thread_service_model::models::Pagination;
-use thread_service_service::services::traits::{GetThreadByIdError, GetThreadsByBoardError, ThreadService};
+use async_graphql::{Context, Object};
+use chrono::{DateTime, Utc};
+use shared_service::model::Pagination;
+use thread_service_service::services::traits::{
+  GetThreadByIdError, GetThreadsByBoardError, ThreadService
+};
+use uuid::Uuid;
 
 use super::{Paged, Thread};
 
@@ -13,15 +17,15 @@ impl Query {
   async fn get_threads_by_board(
     &self,
     ctx: &Context<'_>,
-    board: String,
-    first: u64,
+    board_id: Uuid,
+    first: DateTime<Utc>,
     count: u64
-  ) -> Result<Paged<Thread>, GetThreadsByBoardError> {
+  ) -> Result<Paged<Thread, DateTime<Utc>>, GetThreadsByBoardError> {
     let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
 
     Ok(
       service
-        .get_threads_by_board(&board, Pagination { first, count })
+        .get_threads_by_board(board_id, Pagination { first, count })
         .await?
         .inner_into::<Thread>()
         .into()
@@ -31,7 +35,7 @@ impl Query {
   async fn get_thread_by_id(
     &self,
     ctx: &Context<'_>,
-    thread_id: ID
+    thread_id: Uuid
   ) -> Result<Thread, GetThreadByIdError> {
     self.find_thread_by_id(ctx, thread_id).await
   }
@@ -40,10 +44,10 @@ impl Query {
   async fn find_thread_by_id(
     &self,
     ctx: &Context<'_>,
-    id: ID
+    id: Uuid
   ) -> Result<Thread, GetThreadByIdError> {
     let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
 
-    service.get_thread_by_id(&id).await.map(Thread::from)
+    service.get_thread_by_id(id).await.map(Thread::from)
   }
 }
