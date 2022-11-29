@@ -32,8 +32,7 @@ export default function LoginSignupPage() {
         justifyContent:     'center',
         backgroundImage:    'url("/assets/background.jpg")',
         backgroundSize:     'cover',
-        backgroundPosition: 'center',
-        backgroundColor:    'red'
+        backgroundPosition: 'center'
       }}
     >
       <Paper
@@ -45,10 +44,11 @@ export default function LoginSignupPage() {
         }}
       >
         <Swiper
-          autoHeight={true}
           draggable={false}
           onSwiper={setSwiper}
           spaceBetween={20}
+          autoHeight
+          noSwiping
         >
           <SwiperSlide>
             <LoginForm />

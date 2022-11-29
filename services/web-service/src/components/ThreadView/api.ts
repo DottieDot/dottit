@@ -1,10 +1,10 @@
-import { Pagination, Thread, Comment } from '../../model'
+import { Page, Thread, Comment } from '../../model'
 import { gql } from '@apollo/client'
 
 export type ResponseComment = Pick<Comment, 'id' | 'score' | 'text' | 'user'>
 
-export type ResponseThread = Pick<Thread, 'id' | 'score' | 'title' | 'text' | 'media' | 'user'> & {
-  comments: Pagination<ResponseComment>
+export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text'  | 'userId'> & {
+  comments: Page<ResponseComment>
 }
 
 export interface ResponseData {

@@ -17,6 +17,7 @@ use shared_service::service_mediator::{
   queries::{ApiTokenForUser, CreateApiTokenForUserQuery},
   MediatorConsumer
 };
+use uuid::Uuid;
 
 use self::database::Database;
 
@@ -25,7 +26,7 @@ mod event_bus;
 
 #[derive(Serialize, Deserialize)]
 struct ValidateResponse {
-  user_id: String
+  user_id: Uuid
 }
 
 async fn validate_handler(
@@ -62,7 +63,7 @@ async fn main() {
     .subscribe(move |query: CreateApiTokenForUserQuery| {
       let service = auth_token_service.clone();
       async move {
-        let token = service.create_token_for_user(&query.user_id).await?;
+        let token = service.create_token_for_user(query.user_id).await?;
 
         let result = ApiTokenForUser {
           user_id: query.user_id,

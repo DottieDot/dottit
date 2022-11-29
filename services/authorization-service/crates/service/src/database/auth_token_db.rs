@@ -1,7 +1,8 @@
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
 use async_trait::async_trait;
 use redis::{AsyncCommands, RedisError};
+use uuid::Uuid;
 
 use super::traits::{self, DbError};
 
@@ -17,18 +18,22 @@ impl AuthTokenDb {
 
 #[async_trait]
 impl traits::AuthTokenDb for AuthTokenDb {
-  async fn store_token(&self, token: &str, user_id: &str) -> Result<(), DbError> {
+  async fn store_token(&self, token: &str, user_id: Uuid) -> Result<(), DbError> {
     let mut conn = self.db.get_async_connection().await?;
 
-    conn.set_nx(token, user_id).await?;
+    conn.set_nx(token, user_id.to_string()).await?;
 
     Ok(())
   }
 
-  async fn get_token_owner(&self, token: &str) -> Result<Option<String>, DbError> {
+  async fn get_token_owner(&self, token: &str) -> Result<Option<Uuid>, DbError> {
     let mut conn = self.db.get_async_connection().await?;
 
-    Ok(conn.get(token).await?)
+    if let Some(value) = conn.get::<&str, Option<String>>(token).await? {
+      Ok(Some(Uuid::from_str(&value)?))
+    } else {
+      Ok(None)
+    }
   }
 
   async fn delete_token(&self, token: &str) -> Result<(), DbError> {
@@ -45,5 +50,11 @@ impl From<RedisError> for DbError {
     Self::Unknown {
       source: Box::new(error)
     }
+  }
+}
+
+impl From<uuid::Error> for DbError {
+  fn from(_: uuid::Error) -> Self {
+    Self::InvalidUuid
   }
 }

@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use async_graphql::{Context, Object, ID};
 use comment_service_model::models::Pagination;
-use comment_service_service::services::traits::{CommentService, GetCommentByIdError, GetCommentsByThreadIdError};
+use comment_service_service::services::traits::{
+  CommentService, GetCommentByIdError, GetCommentsByThreadIdError
+};
+use uuid::Uuid;
 
 use super::{comment::Comment, paged::Paged, thread::Thread};
 
@@ -48,7 +51,7 @@ impl Query {
   }
 
   #[graphql(entity)]
-  async fn get_thread_by_id(&self, id: ID) -> Thread {
+  async fn get_thread_by_id(&self, id: Uuid) -> Thread {
     Thread { id }
   }
 }

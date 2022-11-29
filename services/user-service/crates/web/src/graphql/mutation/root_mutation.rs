@@ -1,9 +1,13 @@
 use std::sync::Arc;
 
-use async_graphql::{Context, Object, ID};
+use async_graphql::{Context, Object, Union};
+use shared_web::{
+  gql::{AlreadyLoggedIn, ValidationError},
+  GqlContextExtensions
+};
 use user_service_service::{
-  models::dtos::CreateUserDto,
-  services::traits::{CreateUserError, DeleteUserError, UserService}
+  models::dtos::{CreateUserDto, LoginDto},
+  services::traits::{CreateUserError, LoginError, UserService}
 };
 
 use crate::graphql::query::AuthenticatedUser;
@@ -17,18 +21,59 @@ impl Mutation {
     ctx: &Context<'_>,
     username: String,
     password: String
-  ) -> Result<AuthenticatedUser, CreateUserError> {
+  ) -> Result<CreateUserResult, CreateUserError> {
     let service = ctx.data::<Arc<dyn UserService>>().unwrap();
+    if ctx.authenticated_user().is_some() {
+      return Ok(CreateUserResult::AlreadyLoggedIn(AlreadyLoggedIn));
+    }
 
-    service
+    let authenticated_user = service
       .create_user(CreateUserDto { username, password })
-      .await
-      .map(AuthenticatedUser::from)
+      .await?;
+
+    match authenticated_user {
+      Ok(user) => Ok(CreateUserResult::AuthenticatedUser(user.into())),
+      Err(err) => Ok(CreateUserResult::ValidationError(err.into()))
+    }
   }
 
-  pub async fn delete_user(&self, ctx: &Context<'_>, user_id: ID) -> Result<bool, DeleteUserError> {
+  pub async fn login_user(
+    &self,
+    ctx: &Context<'_>,
+    username: String,
+    password: String
+  ) -> Result<LoginUserResult, LoginError> {
     let service = ctx.data::<Arc<dyn UserService>>().unwrap();
+    if ctx.authenticated_user().is_some() {
+      return Ok(LoginUserResult::AlreadyLoggedIn(AlreadyLoggedIn));
+    }
 
-    service.delete_user(&user_id).await.map(|_| true)
+    match service.login(LoginDto { username, password }).await? {
+      Some(user) => Ok(LoginUserResult::AuthenticatedUser(user.into())),
+      None => Ok(LoginUserResult::LoginFailed(LoginFailed))
+    }
   }
+}
+
+#[derive(Union)]
+pub enum CreateUserResult {
+  AuthenticatedUser(AuthenticatedUser),
+  ValidationError(ValidationError),
+  AlreadyLoggedIn(AlreadyLoggedIn)
+}
+
+pub struct LoginFailed;
+
+#[Object]
+impl LoginFailed {
+  pub async fn message(&self) -> &'static str {
+    "failed to login."
+  }
+}
+
+#[derive(Union)]
+pub enum LoginUserResult {
+  AuthenticatedUser(AuthenticatedUser),
+  AlreadyLoggedIn(AlreadyLoggedIn),
+  LoginFailed(LoginFailed)
 }

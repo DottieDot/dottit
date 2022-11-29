@@ -1,5 +1,4 @@
 mod authenticated_user;
-mod paged;
 mod root_query;
 mod user;
 

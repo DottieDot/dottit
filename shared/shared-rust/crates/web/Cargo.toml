@@ -8,6 +8,11 @@ name = "shared_web"
 path = "src/lib.rs"
 
 [dependencies]
-async-graphql = { version = "^4.0.6", features = ["dataloader"] }
+async-graphql = { version = "^4.0.6", features = [
+  "dataloader",
+  "chrono",
+  "uuid",
+] }
 axum = "^0.5.1"
 uuid = "1.2.2"
+dottit-shared-service = { path = "../service" }

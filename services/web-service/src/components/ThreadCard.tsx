@@ -5,11 +5,9 @@ import { memo, useCallback } from 'react'
 export interface ThreadCardThread {
   id: string
   title: string
-  user?: string
-  board?: string
-  text?: string | null
-  media?: string | null
-  score: number
+  userId?: string
+  boardId?: string
+  text: string | null
 }
 
 export interface ThreadCardProps {
@@ -44,11 +42,11 @@ function ThreadCard({ thread, onClick }: ThreadCardProps) {
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ flex: 1 }}>
           <Box>
-            {thread.user && (
+            {thread.userId && (
               <Typography color="text.secondary" sx={{ fontSize: 14 }}>
                 By
                 {' '}
-                {thread.user}
+                {thread.userId}
               </Typography>
             )}
           </Box>
@@ -68,7 +66,7 @@ function ThreadCard({ thread, onClick }: ThreadCardProps) {
                 display:    'inline-flex'
               }}
             >
-              {thread.score}
+              {0}
               <UpvoteIcon fontSize="inherit" sx={{ ml: .2 }} />
             </Typography>
 

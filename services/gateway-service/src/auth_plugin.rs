@@ -11,6 +11,7 @@ use http::StatusCode;
 use schemars::JsonSchema;
 use serde::Deserialize;
 use tower::{BoxError, ServiceBuilder, ServiceExt};
+use uuid::Uuid;
 
 const USER_CONTEXT_PARAM_NAME: &str = "user_id";
 const AUTHORIZATION_HEADER_NAME: &str = "authorization";
@@ -32,7 +33,7 @@ pub struct AuthPluginConfig {
 
 #[derive(Deserialize)]
 struct ValidateResponse {
-  user_id: String
+  user_id: Uuid
 }
 
 impl AuthPluginState {

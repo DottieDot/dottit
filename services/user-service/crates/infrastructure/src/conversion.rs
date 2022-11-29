@@ -8,7 +8,7 @@ use user_service_model::models::User;
 impl From<user::Model> for User {
   fn from(user: user::Model) -> Self {
     Self {
-      id:            user.id.to_string(),
+      id:            user.id,
       username:      user.username,
       password_hash: user.password_hash
     }

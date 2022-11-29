@@ -1,5 +1,7 @@
+use uuid::Uuid;
+
 pub struct User {
-  pub id:            String,
+  pub id:            Uuid,
   pub username:      String,
   pub password_hash: String
 }

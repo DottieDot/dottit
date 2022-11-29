@@ -1,8 +1,9 @@
-use user_service_model::models::{User, UuidString};
+use user_service_model::models::User;
+use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct UserDto {
-  pub id:       UuidString,
+  pub id:       Uuid,
   pub username: String
 }
 

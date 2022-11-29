@@ -1,4 +1,5 @@
 mod authenticated_user;
+pub mod gql;
 mod gql_context_extensions;
 pub mod middleware;
 

@@ -1,5 +1,8 @@
+use std::str::FromStr;
+
 use async_graphql::{Object, ID};
 use comment_service_service::models::dtos::CommentDto;
+use uuid::Uuid;
 
 use super::thread::Thread;
 
@@ -20,7 +23,7 @@ impl Comment {
 
   async fn thread(&self) -> Thread {
     Thread {
-      id: self.comment.thread_id.clone().into()
+      id: Uuid::from_str(&self.comment.thread_id).unwrap()
     }
   }
 

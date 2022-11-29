@@ -1,7 +1,7 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
-import { Pagination } from '../model'
+import { Page } from '../model'
 
-function paginationMerger(existing: Pagination<unknown> | undefined, incoming: Pagination<unknown>) {
+function paginationMerger(existing: Page<unknown> | undefined, incoming: Page<unknown>) {
   return {
     next:  incoming.next,
     items: [
@@ -32,7 +32,7 @@ const cache = new InMemoryCache({
   }
 })
 
-const httpLink = createHttpLink({ uri: 'http://127.0.0.1:50940/graphql' })
+const httpLink = createHttpLink({ uri: 'http://127.0.0.1:52810/graphql' })
 
 const client = new ApolloClient({
   link:  httpLink,

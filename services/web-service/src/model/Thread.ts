@@ -1,10 +1,8 @@
 
 export interface Thread {
   id: string,
-  score: number,
+  userId: string
+  boardId: string,
   title: string,
-  text?: string,
-  media?: string,
-  board: string,
-  user: string
+  text: string
 }

@@ -15,3 +15,6 @@ amiquip = "0.4.2"
 tokio = { version = "1.21.2", features = ["full"] }
 dottit-shared-service = { path = "../../../../shared/shared-rust/crates/service" }
 bcrypt = "0.13.0"
+uuid = "1.2.2"
+regex = "1"
+lazy_static = "1.4.0"

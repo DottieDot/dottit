@@ -3,10 +3,15 @@ use crate::{
   repo_error_from_db_error
 };
 use async_trait::async_trait;
-use user_service_model::models::{User, UuidStr};
-use sea_orm::{prelude::Uuid, ActiveModelTrait, ActiveValue, DatabaseConnection, EntityTrait};
-use user_service_service::repos::{RepositoryError, RepositoryResult, UserRepository as UserRepoTrait};
+use sea_orm::{
+  prelude::Uuid, ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait,
+  QueryFilter
+};
 use std::sync::Arc;
+use user_service_model::models::User;
+use user_service_service::repos::{
+  RepositoryError, RepositoryResult, UserRepository as UserRepoTrait
+};
 
 pub struct UserRepository {
   db: Arc<DatabaseConnection>
@@ -20,17 +25,15 @@ impl UserRepository {
 
 #[async_trait]
 impl UserRepoTrait for UserRepository {
-  async fn get_user_by_id(&self, id: &UuidStr) -> RepositoryResult<User> {
-    let uuid = Uuid::parse_str(id).unwrap();
-
-    let query_result = DbUser::find_by_id(uuid)
+  async fn get_user_by_id(&self, id: Uuid) -> RepositoryResult<User> {
+    let query_result = DbUser::find_by_id(id)
       .one(self.db.as_ref())
       .await
       .map_err(repo_error_from_db_error)?;
 
     query_result.map(|user| user.into()).ok_or_else(|| {
       RepositoryError::NotFound {
-        key:    id.to_owned(),
+        key:    id.to_string(),
         source: None
       }
     })
@@ -51,10 +54,18 @@ impl UserRepoTrait for UserRepository {
     Ok(query_result.into())
   }
 
-  async fn delete_user(&self, id: &UuidStr) -> RepositoryResult<()> {
-    let uuid = Uuid::parse_str(id).unwrap();
+  async fn get_user_by_username(&self, username: &str) -> RepositoryResult<Option<User>> {
+    let user = DbUser::find()
+      .filter(user::Column::Username.eq(username))
+      .one(self.db.as_ref())
+      .await
+      .map_err(repo_error_from_db_error)?;
 
-    DbUser::delete_by_id(uuid)
+    Ok(user.map(|u| u.into()))
+  }
+
+  async fn delete_user(&self, id: Uuid) -> RepositoryResult<()> {
+    DbUser::delete_by_id(id)
       .exec(self.db.as_ref())
       .await
       .map_err(repo_error_from_db_error)?;

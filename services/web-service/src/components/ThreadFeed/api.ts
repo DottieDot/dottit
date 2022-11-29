@@ -1,10 +1,10 @@
-import { Pagination, Thread } from '../../model'
+import { Page, Thread } from '../../model'
 import { gql } from '@apollo/client'
 
-export type ResponseThread = Pick<Thread, 'id' | 'score' | 'title' | 'text' | 'user'>
+export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text' | 'userId'>
 
 export interface ResponseData {
-  getThreadsByBoard: Pagination<ResponseThread>
+  getThreadsByBoard: Page<ResponseThread>
 }
 
 export interface RequestVariables {
@@ -14,14 +14,13 @@ export interface RequestVariables {
 }
 
 export const query = gql`
-  query GetThreadsByBoard($board: String!, $first: Int!, $count: Int!) {
-    getThreadsByBoard(board: $board, first: $first, count: $count) {
+  query GetThreadsByBoard($board: UUID!, $first: DateTime!, $count: Int!) {
+    getThreadsByBoard(boardId: $board, first: $first, count: $count) {
       items {
         id
-        score
+        user
         title
         text
-        user
       }
       next
     }
