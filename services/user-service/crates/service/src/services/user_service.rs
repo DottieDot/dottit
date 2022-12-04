@@ -19,7 +19,9 @@ use crate::{
   repos::{RepositoryError, UserRepository}
 };
 
-use super::traits::{self, CreateUserError, DeleteUserError, GetUserByIdError, LoginError};
+use super::traits::{
+  self, CreateUserError, DeleteUserError, GetUserByIdError, GetUserByUsernameError, LoginError
+};
 
 pub struct UserService {
   repo:     Arc<dyn UserRepository>,
@@ -83,8 +85,32 @@ impl traits::UserService for UserService {
     }
   }
 
+  async fn get_user_by_username(
+    &self,
+    username: &str
+  ) -> Result<Option<UserDto>, GetUserByUsernameError> {
+    let user = self
+      .repo
+      .get_user_by_username(username)
+      .await?
+      .map(|u| UserDto::from(u));
+    Ok(user)
+  }
+
   async fn delete_user(&self, id: Uuid) -> Result<(), DeleteUserError> {
     Ok(self.repo.delete_user(id).await?)
+  }
+}
+
+impl From<RepositoryError> for GetUserByUsernameError {
+  fn from(error: RepositoryError) -> Self {
+    match &error {
+      _ => {
+        Self::Unknown {
+          source: error.into()
+        }
+      }
+    }
   }
 }
 

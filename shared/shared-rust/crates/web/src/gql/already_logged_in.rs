@@ -1,10 +1,15 @@
-use async_graphql::Object;
+use async_graphql::SimpleObject;
 
-pub struct AlreadyLoggedIn;
+#[derive(SimpleObject)]
+#[graphql(shareable)]
+pub struct AlreadyLoggedIn {
+  message: String
+}
 
-#[Object]
 impl AlreadyLoggedIn {
-  pub async fn message(&self) -> &'static str {
-    "you are already logged in."
+  pub fn new() -> Self {
+    Self {
+      message: "you are already logged in.".into()
+    }
   }
 }

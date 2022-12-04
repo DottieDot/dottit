@@ -1,4 +1,4 @@
-import { Fragment, memo, UIEventHandler, useCallback } from 'react'
+import { Fragment, memo, useCallback } from 'react'
 import { ResponseComment } from './api'
 import Comment from '../Comment'
 import { Stack, SxProps } from '@mui/material'

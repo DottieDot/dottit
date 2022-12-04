@@ -14,8 +14,10 @@ use tower::{BoxError, ServiceBuilder, ServiceExt};
 use uuid::Uuid;
 
 const USER_CONTEXT_PARAM_NAME: &str = "user_id";
+const API_TOKEN_CONTEXT_PARAM_NAME: &str = "api_token";
 const AUTHORIZATION_HEADER_NAME: &str = "authorization";
 const USER_HEADER_NAME: &str = "dottit-user-id";
+const API_TOKEN_HEADER_NAME: &str = "dottit-api-token";
 
 pub struct AuthPlugin {
   state: Arc<AuthPluginState>
@@ -95,6 +97,9 @@ impl Plugin for AuthPlugin {
             request
               .context
               .insert(USER_CONTEXT_PARAM_NAME, auth.user_id)?;
+            request
+              .context
+              .insert(API_TOKEN_CONTEXT_PARAM_NAME, token.to_owned())?;
 
             Ok(ControlFlow::Continue(request))
           }
@@ -113,12 +118,31 @@ impl Plugin for AuthPlugin {
 
     let request_mapper = |mut request: supergraph::Request| {
       let maybe_user_role: Option<String> = request.context.get(USER_CONTEXT_PARAM_NAME).unwrap();
+      let maybe_api_token: Option<String> =
+        request.context.get(API_TOKEN_CONTEXT_PARAM_NAME).unwrap();
 
       if let Some(user_role) = maybe_user_role {
         request
           .supergraph_request
           .headers_mut()
           .insert(USER_HEADER_NAME, user_role.try_into().unwrap());
+      } else {
+        request
+          .supergraph_request
+          .headers_mut()
+          .remove(USER_HEADER_NAME);
+      }
+
+      if let Some(api_token) = maybe_api_token {
+        request
+          .supergraph_request
+          .headers_mut()
+          .insert(API_TOKEN_HEADER_NAME, api_token.try_into().unwrap());
+      } else {
+        request
+          .supergraph_request
+          .headers_mut()
+          .remove(API_TOKEN_HEADER_NAME);
       }
 
       request
@@ -134,9 +158,9 @@ impl Plugin for AuthPlugin {
 }
 
 fn get_auth_token_from_header_value(auth_header_value: &str) -> Option<&str> {
-  let bearer_pos = auth_header_value.find("Bearer ");
-  if let Some(start) = bearer_pos {
-    Some(&auth_header_value[start..])
+  let bearer = "Bearer ";
+  if auth_header_value.starts_with(bearer) {
+    Some(&auth_header_value[bearer.len()..])
   } else {
     None
   }

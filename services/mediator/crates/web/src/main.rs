@@ -10,7 +10,7 @@ use axum::{
 };
 use shared_service::{
   events::{MediatorResponse, MEDIATOR_EXCHANGE},
-  messaging::{EventBus, EventMetadata, QueueMetadata}
+  messaging::{EventBus, EventMetadata, QueueMetadata, QueueOptions}
 };
 use uuid::Uuid;
 
@@ -60,7 +60,10 @@ async fn register_response_listener(
         exchange:        MEDIATOR_EXCHANGE,
         queue:           QueueMetadata {
           routing_key:  &mediator_id.uuid.to_string(),
-          options:      Default::default(),
+          options:      QueueOptions {
+            exclusive: true,
+            ..Default::default()
+          },
           bind_options: Default::default()
         },
         consume_options: Default::default()

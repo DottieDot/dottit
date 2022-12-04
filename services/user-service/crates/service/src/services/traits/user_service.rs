@@ -18,6 +18,16 @@ pub trait UserService: Send + Sync {
   async fn login(&self, dto: LoginDto) -> Result<Option<AuthenticatedUserDto>, LoginError>;
 
   async fn delete_user(&self, id: Uuid) -> Result<(), DeleteUserError>;
+
+  async fn get_user_by_username(&self, username: &str) -> Result<Option<UserDto>, GetUserByUsernameError>;
+}
+
+#[derive(Error, Debug)]
+pub enum GetUserByUsernameError {
+  #[error("an unknown error ocurred")]
+  Unknown {
+    source: Box<dyn StdError + Send + Sync>
+  }
 }
 
 #[derive(Error, Debug)]

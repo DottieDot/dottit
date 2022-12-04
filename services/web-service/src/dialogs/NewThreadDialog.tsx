@@ -26,8 +26,6 @@ function NewThreadDialog({ open, onClose }: NewThreadDialogProps) {
         .required('Required')
     }),
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      // eslint-disable-next-line no-console
-      console.log(values)
       setSubmitting(false)
       resetForm()
     },

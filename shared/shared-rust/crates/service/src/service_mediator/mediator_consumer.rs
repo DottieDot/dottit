@@ -3,7 +3,7 @@ use std::{future::Future, sync::Arc};
 
 use crate::{
   events::{self, MediatorResponse, MEDIATOR_EXCHANGE},
-  messaging::{EventBus, EventMetadata, FromEventData, QueueMetadata, QueueOptions, ToEventData}
+  messaging::{EventBus, EventMetadata, FromEventData, QueueMetadata, ToEventData}
 };
 
 use super::MediatorQuery;
@@ -33,10 +33,7 @@ impl MediatorConsumer {
           exchange:        MEDIATOR_EXCHANGE,
           queue:           QueueMetadata {
             routing_key:  Q::name(),
-            options:      QueueOptions {
-              exclusive: true,
-              ..Default::default()
-            },
+            options:      Default::default(),
             bind_options: Default::default()
           },
           consume_options: Default::default()

@@ -1,11 +1,17 @@
-import { Button, TextField, Typography } from '@mui/material'
+import { FormHelperText, Link, TextField, Typography } from '@mui/material'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useMutation } from '@apollo/client'
 import { createUserQuery, CreateUserResponse } from './api'
+import { Link as RouterLink } from 'react-router-dom'
+import { LoadingButton } from '@mui/lab'
+import { useState } from 'react'
+import { useUser } from '../../hooks'
 
 export default function SignupForm() {
   const [ createUser ] = useMutation<CreateUserResponse>(createUserQuery)
+  const [ error, setError ] = useState<string| null>(null)
+  const { setLoggedIn } = useUser()
   const formik = useFormik({
     initialValues: {
       username:        '',
@@ -30,7 +36,7 @@ export default function SignupForm() {
         .oneOf([ Yup.ref('password') ], 'Passwords do not match')
         .required('Required')
     }),
-    onSubmit: async (values, { setSubmitting, setFieldError }) => {
+    onSubmit: async (values, { setFieldError }) => {
       const response = await createUser({
         variables: {
           username: values.username,
@@ -42,20 +48,19 @@ export default function SignupForm() {
         const result = response.data.createUser
         switch (result.__typename) {
         case 'AuthenticatedUser':
-          alert(result.apiToken)
+          setLoggedIn(result.apiToken, result.user)
           break
         case 'AlreadyLoggedIn':
-          alert('You\'re already logged in')
+          setError(result.message)
           break
         case 'ValidationError':
+          setError(result.message)
           result.errors.forEach(({ field, errors: [ error ] }) => {
             setFieldError(field, error)
           })
           break
         }
       }
-
-      setSubmitting(false)
     },
     validateOnMount: true
   })
@@ -102,15 +107,27 @@ export default function SignupForm() {
         {...sharedProps('confirmPassword')}
       />
 
-      <Button
+      <LoadingButton
         disabled={formik.isSubmitting || !formik.isValid}
-        sx={{ mt: 2 }}
+        loading={formik.isSubmitting}
+        sx={{
+          mt: 2,
+          mb: 1
+        }}
         type="submit"
         variant="contained"
         fullWidth
       >
         Create Account
-      </Button>
+      </LoadingButton>
+
+      <FormHelperText sx={{ mb: 1 }} error>
+        {error ?? ' '}
+      </FormHelperText>
+
+      <Link component={RouterLink} to="/auth/login">
+        Already have an account? Login instead.
+      </Link>
     </form>
   )
 }

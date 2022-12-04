@@ -1,24 +1,23 @@
-use async_graphql::{Object, SimpleObject};
+use async_graphql::{ComplexObject, SimpleObject};
 use shared_service::validation::{ValidationError as ServiceValidationError, ValidationErrorField};
 
 #[derive(SimpleObject)]
+#[graphql(shareable)]
 pub struct FieldError {
   pub field:  String,
   pub errors: Vec<String>
 }
 
+#[derive(SimpleObject)]
+#[graphql(shareable, complex)]
 pub struct ValidationError {
   errors: Vec<FieldError>
 }
 
-#[Object]
+#[ComplexObject]
 impl ValidationError {
   pub async fn message(&self) -> &'static str {
     "One or more fields didn't pass validation."
-  }
-
-  pub async fn errors(&self) -> &Vec<FieldError> {
-    &self.errors
   }
 }
 

@@ -15,3 +15,8 @@ subgraphs:
     routing_url: http://user-service:80/graphql
     schema:
       subgraph_url: http://user-service:80/graphql
+
+  authorization-service:
+    routing_url: http://authorization-service:80/graphql
+    schema:
+      subgraph_url: http://authorization-service:80/graphql

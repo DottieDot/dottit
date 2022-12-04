@@ -3,11 +3,13 @@ use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
   extract::Extension,
   http::StatusCode,
+  middleware,
   response::{Html, IntoResponse},
   routing::{get, post},
   Router
 };
 use shared_service::service_mediator::MediatorProducer;
+use shared_web::{middleware::auth, AuthenticatedUser};
 use std::sync::Arc;
 
 use user_service_infrastructure::repos::UserRepository;
@@ -22,8 +24,19 @@ mod database;
 mod event_bus;
 pub mod graphql;
 
-async fn graphql_handler(schema: Extension<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
-  schema.execute(req.into_inner()).await.into()
+async fn graphql_handler(
+  Extension(user): Extension<Option<AuthenticatedUser>>,
+  schema: Extension<AppSchema>,
+  req: GraphQLRequest
+) -> GraphQLResponse {
+  let query = req.into_inner();
+
+  let query = match user {
+    Some(user) => query.data(user),
+    None => query
+  };
+
+  schema.execute(query).await.into()
 }
 
 async fn playground_handler() -> impl IntoResponse {
@@ -58,6 +71,7 @@ async fn main() {
   let router = Router::<axum::body::Body>::new()
     .route("/", get(playground_handler))
     .route("/graphql", post(graphql_handler))
+    .route_layer(middleware::from_fn(auth))
     .route("/readiness", get(readiness_probe_handler))
     .route("/health", get(health_probe_handler))
     .layer(Extension(schema));

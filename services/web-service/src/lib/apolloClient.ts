@@ -1,5 +1,6 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 import { Page } from '../model'
+import { setContext } from '@apollo/client/link/context'
 
 function paginationMerger(existing: Page<unknown> | undefined, incoming: Page<unknown>) {
   return {
@@ -10,6 +11,20 @@ function paginationMerger(existing: Page<unknown> | undefined, incoming: Page<un
     ]
   }
 }
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('api_token')
+  if (token) {
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : ''
+      }
+    }
+  } else {
+    return headers
+  }
+})
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -32,10 +47,10 @@ const cache = new InMemoryCache({
   }
 })
 
-const httpLink = createHttpLink({ uri: 'http://127.0.0.1:52810/graphql' })
+const httpLink = createHttpLink({ uri: 'http://127.0.0.1:64344/graphql' })
 
 const client = new ApolloClient({
-  link:  httpLink,
+  link:  authLink.concat(httpLink),
   cache: cache
 })
 

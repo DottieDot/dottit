@@ -1,10 +1,15 @@
-use async_graphql::Object;
+use async_graphql::SimpleObject;
 
-pub struct Unauthorized;
+#[derive(SimpleObject)]
+#[graphql(shareable)]
+pub struct Unauthorized {
+  message: String
+}
 
-#[Object]
 impl Unauthorized {
-  pub async fn message(&self) -> &'static str {
-    "You do not have access this resource."
+  pub fn new() -> Self {
+    Self {
+      message: "you do not have access this resource.".into()
+    }
   }
 }

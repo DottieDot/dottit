@@ -75,12 +75,14 @@ impl QueryHandler {
   }
 
   pub async fn handle_response(&self, response: MediatorResponse) {
-    let state = self
-      .futures
-      .lock()
-      .await
-      .remove(&Uuid::from_str(&response.query_id).unwrap())
-      .expect("response received for non-existent query");
+    let state = {
+      self
+        .futures
+        .lock()
+        .await
+        .remove(&Uuid::from_str(&response.query_id).unwrap())
+        .expect("response received for non-existent query")
+    };
 
     println!("Response received for {}", response.query_id);
 

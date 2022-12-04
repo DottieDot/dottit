@@ -3,6 +3,7 @@ kind: Config
 requires:
   - path: "../message-bus"
   - path: "../mediator"
+  - path: "../user-service"
 build:
   artifacts:
     - image: authorization-service

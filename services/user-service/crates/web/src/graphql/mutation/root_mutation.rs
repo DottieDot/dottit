@@ -24,7 +24,7 @@ impl Mutation {
   ) -> Result<CreateUserResult, CreateUserError> {
     let service = ctx.data::<Arc<dyn UserService>>().unwrap();
     if ctx.authenticated_user().is_some() {
-      return Ok(CreateUserResult::AlreadyLoggedIn(AlreadyLoggedIn));
+      return Ok(CreateUserResult::AlreadyLoggedIn(AlreadyLoggedIn::new()));
     }
 
     let authenticated_user = service
@@ -45,7 +45,7 @@ impl Mutation {
   ) -> Result<LoginUserResult, LoginError> {
     let service = ctx.data::<Arc<dyn UserService>>().unwrap();
     if ctx.authenticated_user().is_some() {
-      return Ok(LoginUserResult::AlreadyLoggedIn(AlreadyLoggedIn));
+      return Ok(LoginUserResult::AlreadyLoggedIn(AlreadyLoggedIn::new()));
     }
 
     match service.login(LoginDto { username, password }).await? {

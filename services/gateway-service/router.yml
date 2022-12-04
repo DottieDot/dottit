@@ -7,7 +7,9 @@ headers:
   all:
     request:
       - propagate:
-          named: x-user_id
+          named: dottit-user-id
+      - propagate:
+          named: dottit-api-token
 
 plugins:
   gateway-service.auth_plugin:
@@ -21,3 +23,7 @@ homepage:
 
 cors:
   allow_any_origin: true
+
+include_subgraph_errors:
+  all: true
+#
