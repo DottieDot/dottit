@@ -3,6 +3,8 @@ use chrono::{DateTime, Utc};
 use thread_service_model::models::Thread as ThreadModel;
 use uuid::Uuid;
 
+use super::Board;
+
 #[derive(Debug)]
 pub struct Thread {
   thread: ThreadModel
@@ -14,8 +16,8 @@ impl Thread {
     self.thread.id
   }
 
-  async fn board(&self) -> Uuid {
-    self.thread.board_id
+  async fn board(&self) -> Board {
+    Board::new(self.thread.board_id)
   }
 
   async fn user(&self) -> Uuid {

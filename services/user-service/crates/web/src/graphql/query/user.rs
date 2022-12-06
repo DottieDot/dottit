@@ -1,4 +1,5 @@
-use async_graphql::{Object, ID};
+use async_graphql::Object;
+use sea_orm::prelude::Uuid;
 use user_service_service::models::dtos::UserDto;
 
 #[derive(Debug)]
@@ -8,8 +9,8 @@ pub struct User {
 
 #[Object]
 impl User {
-  async fn id(&self) -> ID {
-    ID::from(&self.user.id)
+  async fn id(&self) -> Uuid {
+    self.user.id
   }
 
   async fn username(&self) -> &str {

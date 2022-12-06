@@ -1,37 +1,15 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object};
-use chrono::{DateTime, Utc};
-use shared_service::model::Pagination;
-use thread_service_service::services::traits::{
-  GetThreadByIdError, GetThreadsByBoardError, ThreadService
-};
+use thread_service_service::services::traits::{GetThreadByIdError, ThreadService};
 use uuid::Uuid;
 
-use super::{Paged, Thread};
+use super::{Board, Thread, User};
 
 pub struct Query;
 
 #[Object]
 impl Query {
-  async fn get_threads_by_board(
-    &self,
-    ctx: &Context<'_>,
-    board_id: Uuid,
-    first: DateTime<Utc>,
-    count: u64
-  ) -> Result<Paged<Thread, DateTime<Utc>>, GetThreadsByBoardError> {
-    let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
-
-    Ok(
-      service
-        .get_threads_by_board(board_id, Pagination { first, count })
-        .await?
-        .inner_into::<Thread>()
-        .into()
-    )
-  }
-
   async fn get_thread_by_id(
     &self,
     ctx: &Context<'_>,
@@ -49,5 +27,15 @@ impl Query {
     let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
 
     service.get_thread_by_id(id).await.map(Thread::from)
+  }
+
+  #[graphql(entity)]
+  async fn get_board_by_id(&self, id: Uuid) -> Board {
+    Board::new(id)
+  }
+
+  #[graphql(entity)]
+  async fn get_user_by_id(&self, id: Uuid) -> User {
+    User::new(id)
   }
 }

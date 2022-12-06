@@ -23,8 +23,6 @@ To create the Minikube VM, run the following command:
 minikube start --cpus=8 --memory 9965 --disk-size 96g
 ```
 
-On MacOS the driver should be specified as `hyperkit` like so: `--drive=hyperkit` 
-
 #### Enable ingress
 Add the ingress addon to enable `ingress` deployments:
 ```sh
@@ -63,4 +61,10 @@ echo "password: $password"
 To open the RabbitMQ web UI, run:
 ```sh
 kubectl rabbitmq manage message-bus
+```
+
+### Run services
+To run a service and its dependencies, run:
+```sh
+skaffold dev --tolerate-failures-until-deadline  
 ```

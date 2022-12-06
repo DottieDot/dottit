@@ -1,0 +1,25 @@
+[package]
+name = "board-service-web"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "^0.5.1"
+async-graphql-axum = "^4.0.6"
+async-graphql = { version = "^4.0.6", features = ["dataloader", "uuid"] }
+tokio = { version = "1.0", features = ["full"] }
+board-service-service = { path = "../service" }
+board-service-infrastructure = { path = "../infrastructure" }
+board-service-model = { path = "../model" }
+sea-orm = { version = "^0.9.0", features = [
+  "sqlx-postgres",
+  "runtime-tokio-rustls",
+  "macros",
+] }
+dottit-shared-web = { path = "../../../../shared/shared-rust/crates/web" }
+dottit-shared-service = { path = "../../../../shared/shared-rust/crates/service" }
+dottit-shared-infra = { path = "../../../../shared/shared-rust/crates/infra" }
+uuid = "1.2.2"
+anyhow = "1.0.66"

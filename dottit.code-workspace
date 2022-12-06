@@ -10,25 +10,28 @@
       "path": "services/message-bus"
     },
     {
-      "path": "services/comment-service"
+      "path": "services/web-service"
+    },
+    {
+      "path": "services/mediator"
     },
     {
       "path": "services/gateway-service"
     },
     {
+      "path": "services/comment-service"
+    },
+    {
       "path": "services/thread-service"
+    },
+    {
+      "path": "services/board-service"
     },
     {
       "path": "services/user-service"
     },
     {
       "path": "services/authorization-service"
-    },
-    {
-      "path": "services/web-service"
-    },
-    {
-      "path": "services/mediator"
     }
   ]
 }

@@ -41,6 +41,45 @@ impl repos::ThreadRepository for ThreadRepository {
     })
   }
 
+  async fn get_threads_by_user(
+    &self,
+    user: Uuid,
+    pagination: Pagination<DateTime<Utc>>
+  ) -> RepositoryResult<Page<Thread, DateTime<Utc>>> {
+    let query_result = DbThread::find()
+      .filter(thread::Column::UserId.eq(user))
+      .filter(thread::Column::CreatedAt.gte(pagination.first))
+      .order_by_desc(thread::Column::CreatedAt)
+      .limit(pagination.count + 1)
+      .all(self.db.as_ref())
+      .await;
+
+    match query_result {
+      Ok(threads) => {
+        let next = if threads.len() as u64 == pagination.count + 1 {
+          threads.last().map(|t| t.created_at)
+        } else {
+          None
+        };
+        let items = threads
+          .into_iter()
+          .map(Into::<Thread>::into)
+          .take(pagination.count.try_into().unwrap())
+          .collect::<Vec<_>>();
+
+        Ok(Page {
+          items,
+          next: next.map(|dt| dt.into())
+        })
+      }
+      Err(e) => {
+        Err(RepositoryError::DatabaseError {
+          source: Box::new(e)
+        })
+      }
+    }
+  }
+
   async fn get_threads_by_board(
     &self,
     board_id: Uuid,

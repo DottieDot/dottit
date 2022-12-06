@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: board-service-postgres-pod
+  labels:
+    app: dottit
+    service: board-service
+spec:
+  selector:
+    matchLabels:
+      app: board-service-postgres-pod
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: board-service-postgres-pod
+    spec:
+      containers:
+        - image: postgres:14.5
+          name: board-service-postgres
+          resources:
+            limits:
+              memory: 500Mi
+              cpu: 250m
+          livenessProbe:
+            exec:
+              command: ["pg_isready"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              # Check we can execute queries over TCP (skip-networking is off).
+              command: ["pg_isready"]
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 1
+          env:
+            - name: POSTGRES_DB
+              value: "board_service"
+            - name: POSTGRES_PASSWORD
+              value: "password"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data/pgdata
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: board-service-postgres-pv-claim

@@ -17,6 +17,12 @@ pub trait ThreadRepository: Send + Sync + DynClone {
     pagination: Pagination<DateTime<Utc>>
   ) -> RepositoryResult<Page<Thread, DateTime<Utc>>>;
 
+  async fn get_threads_by_user(
+    &self,
+    user: Uuid,
+    pagination: Pagination<DateTime<Utc>>
+  ) -> RepositoryResult<Page<Thread, DateTime<Utc>>>;
+
   async fn create_thread(
     &self,
     board_id: Uuid,

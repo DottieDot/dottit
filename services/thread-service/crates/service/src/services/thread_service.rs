@@ -37,6 +37,19 @@ impl traits::ThreadService for ThreadService {
     Ok(self.thread_repo.get_thread_by_id(id).await?)
   }
 
+  async fn get_threads_by_user(
+    &self,
+    user_id: Uuid,
+    pagination: Pagination<DateTime<Utc>>
+  ) -> Result<Page<Thread, DateTime<Utc>>, GetThreadsByBoardError> {
+    Ok(
+      self
+        .thread_repo
+        .get_threads_by_user(user_id, pagination)
+        .await?
+    )
+  }
+
   async fn get_threads_by_board(
     &self,
     board_id: Uuid,

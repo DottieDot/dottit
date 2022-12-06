@@ -1,0 +1,20 @@
+[package]
+name = "board-service-service"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "board_service_service"
+path = "src/lib.rs"
+
+[dependencies]
+board-service-model = { path = "../model" }
+thiserror = "1.0.37"
+async-trait = "0.1.57"
+amiquip = "0.4.2"
+tokio = { version = "1.21.2", features = ["full"] }
+dottit-shared-service = { path = "../../../../shared/shared-rust/crates/service" }
+uuid = "1.2.2"
+anyhow = "1.0.66"
+lazy_static = "1.4.0"
+regex = "1.7.0"

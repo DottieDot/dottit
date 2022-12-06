@@ -1,0 +1,22 @@
+[package]
+name = "board-service-infrastructure"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "board_service_infrastructure"
+path = "src/lib.rs"
+
+[dependencies]
+sea-orm = { version = "^0.9.0", features = [
+  "sqlx-postgres",
+  "runtime-tokio-rustls",
+  "macros",
+] }
+board-service-service = { path = "../service" }
+board-service-model = { path = "../model" }
+async-trait = "0.1.57"
+dyn-clone = "1.0.9"
+board-service-migration = { path = "./migration" }
+lapin = "2.1.1"
+tokio = { version = "1.21.2", features = ["full"] }
