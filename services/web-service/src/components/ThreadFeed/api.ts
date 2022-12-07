@@ -4,7 +4,7 @@ import { gql } from '@apollo/client'
 export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text' | 'userId'>
 
 export interface ResponseData {
-  getThreadsByBoard: Page<ResponseThread>
+  getThreadsByBoard: Page<ResponseThread, Date>
 }
 
 export interface RequestVariables {

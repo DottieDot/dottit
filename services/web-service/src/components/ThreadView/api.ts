@@ -4,7 +4,7 @@ import { gql } from '@apollo/client'
 export type ResponseComment = Pick<Comment, 'id' | 'score' | 'text' | 'user'>
 
 export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text'  | 'userId'> & {
-  comments: Page<ResponseComment>
+  comments: Page<ResponseComment, number>
 }
 
 export interface ResponseData {

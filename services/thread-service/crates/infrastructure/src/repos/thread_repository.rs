@@ -69,7 +69,8 @@ impl repos::ThreadRepository for ThreadRepository {
 
         Ok(Page {
           items,
-          next: next.map(|dt| dt.into())
+          next: next.map(|dt| dt.into()),
+          total: None
         })
       }
       Err(e) => {
@@ -108,7 +109,8 @@ impl repos::ThreadRepository for ThreadRepository {
 
         Ok(Page {
           items,
-          next: next.map(|dt| dt.into())
+          next: next.map(|dt| dt.into()),
+          total: None
         })
       }
       Err(e) => {

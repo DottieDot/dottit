@@ -4,9 +4,12 @@ use anyhow::Context;
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 use regex::Regex;
-use shared_service::validation::{
-  validators::{MatchesRegex, StringLength},
-  FieldValidator, ValidationError, ValidationResultBuilder, Validator
+use shared_service::{
+  model::{Page, Pagination},
+  validation::{
+    validators::{MatchesRegex, StringLength},
+    FieldValidator, ValidationError, ValidationResultBuilder, Validator
+  }
 };
 use uuid::Uuid;
 
@@ -69,6 +72,19 @@ impl traits::BoardService for BoardService {
 
   async fn get_board_moderators(&self, board: Uuid) -> anyhow::Result<Vec<Uuid>> {
     Ok(self.mod_repo.get_board_moderators(board).await?)
+  }
+
+  async fn get_boards(
+    &self,
+    pagination: Pagination<u64>
+  ) -> anyhow::Result<Page<BoardDto, u64>> {
+    Ok(
+      self
+        .repo
+        .get_boards(pagination)
+        .await?
+        .inner_into::<BoardDto>()
+    )
   }
 }
 

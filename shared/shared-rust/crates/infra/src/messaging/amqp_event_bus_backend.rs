@@ -17,7 +17,8 @@ use uuid::Uuid;
 pub struct AmqpEventBusBackend {
   _connection: Connection,
   channel:     Channel,
-  exchanges:   HashSet<String> //runtime:     Runtime
+  exchanges:   HashSet<String>,
+  queues:      HashSet<String>
 }
 
 impl AmqpEventBusBackend {
@@ -27,7 +28,8 @@ impl AmqpEventBusBackend {
     Self {
       _connection: connection,
       channel,
-      exchanges: Default::default() // runtime: Runtime::new().unwrap()
+      exchanges: Default::default(),
+      queues: Default::default()
     }
   }
 }
@@ -62,30 +64,34 @@ impl AmqpEventBusBackend {
     }
   }
 
-  async fn declare_queue<'a>(&self, name: &str, metadata: EventMetadata<'a>) {
-    let QueueOptions {
-      passive,
-      durable,
-      exclusive,
-      auto_delete,
-      no_wait
-    } = metadata.queue.options;
+  async fn declare_queue<'a>(&mut self, name: &str, metadata: EventMetadata<'a>) {
+    if self.queues.insert(name.to_owned()) {
+      let QueueOptions {
+        passive,
+        durable,
+        exclusive,
+        auto_delete,
+        no_wait
+      } = metadata.queue.options;
 
-    self
-      .channel
-      .queue_declare(
-        name,
-        QueueDeclareOptions {
-          passive,
-          durable,
-          exclusive,
-          auto_delete,
-          nowait: no_wait
-        },
-        Default::default()
-      )
-      .await
-      .unwrap();
+      self
+        .channel
+        .queue_declare(
+          name,
+          QueueDeclareOptions {
+            passive,
+            durable,
+            exclusive,
+            auto_delete,
+            nowait: no_wait
+          },
+          Default::default()
+        )
+        .await
+        .unwrap();
+
+      self.bind_queue(name, metadata).await;
+    }
   }
 
   async fn bind_queue<'a>(&self, name: &str, metadata: EventMetadata<'a>) {
@@ -144,7 +150,6 @@ impl EventBusBackend for AmqpEventBusBackend {
 
     self.declare_exchange(metadata.exchange).await;
     self.declare_queue(new_queue_name, metadata).await;
-    self.bind_queue(new_queue_name, metadata).await;
 
     let mut consumer = self.consume(new_queue_name, metadata.consume_options).await;
 

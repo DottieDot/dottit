@@ -25,3 +25,6 @@ export * from './Comment'
 
 export { default as VisibilityTrigger } from './VisibilityTrigger'
 export * from './VisibilityTrigger'
+
+export { default as Board } from './Board'
+export * from './Board'

@@ -5,9 +5,11 @@ use board_service_service::repos::{
 };
 use sea_orm::{
   prelude::Uuid, ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait,
-  QueryFilter
+  PaginatorTrait, QueryFilter, QueryOrder, QuerySelect
 };
+use shared_service::model::{Page, Pagination};
 use std::sync::Arc;
+use tokio::join;
 
 use crate::{
   model::{board, board_moderator},
@@ -72,5 +74,44 @@ impl BoardRepoTrait for BoardRepository {
         source: None
       }
     })
+  }
+
+  async fn get_boards(&self, pagination: Pagination<u64>) -> RepositoryResult<Page<Board, u64>> {
+    let count_query = board::Entity::find().count(self.db.as_ref());
+    let entity_query = board::Entity::find()
+      .order_by_desc(board::Column::Name)
+      .offset(pagination.first as u64)
+      .limit(pagination.count + 1)
+      .all(self.db.as_ref());
+
+    let (query_result, count_result) = join!(entity_query, count_query);
+
+    let count = count_result.map_err(repo_error_from_db_error)?;
+
+    match query_result {
+      Ok(threads) => {
+        let next = if threads.len() as u64 == pagination.count + 1 {
+          Some(pagination.first + pagination.count)
+        } else {
+          None
+        };
+        let items = threads
+          .into_iter()
+          .map(Into::<Board>::into)
+          .take(pagination.count.try_into().unwrap())
+          .collect::<Vec<_>>();
+
+        Ok(Page {
+          items,
+          next: next.map(|dt| dt.into()),
+          total: Some(count as u64)
+        })
+      }
+      Err(e) => {
+        Err(RepositoryError::DatabaseError {
+          source: Box::new(e)
+        })
+      }
+    }
   }
 }

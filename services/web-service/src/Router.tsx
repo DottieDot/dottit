@@ -1,5 +1,5 @@
 import { Navigate, RouterProvider } from 'react-router'
-import { BoardPage, LoginSignupPage, UserPage } from './pages'
+import { BoardPage, BoardsPage, LoginSignupPage, UserPage } from './pages'
 import { createBrowserRouter } from 'react-router-dom'
 import LoginForm from './pages/LoginSignupPage/LoginForm'
 import SignupForm from './pages/LoginSignupPage/SignupForm'
@@ -11,6 +11,10 @@ function Router() {
       path:     '/',
       element:  <StandardLayout />,
       children: [
+        {
+          index:   true,
+          element: <Navigate to="/boards" replace />
+        },
         {
           path:     '/b/:board',
           element:  <BoardPage />,
@@ -24,6 +28,10 @@ function Router() {
         {
           path:    '/u/:user',
           element: <UserPage />
+        },
+        {
+          path:    '/boards',
+          element: <BoardsPage />
         }
       ]
     },
