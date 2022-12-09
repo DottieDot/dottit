@@ -1,21 +1,22 @@
 import { Fragment, memo, useCallback, useEffect, useState } from 'react'
 import { Box, Button, Container, Divider, LinearProgress, Pagination, Typography } from '@mui/material'
 import { Add as NewBoardIcon } from '@mui/icons-material'
-import { useLazyQuery, useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { getBoardsQuery, GetBoardsResponse } from './api'
 import { Board } from '../../components'
 import NewBoardDialog from './NewBoardDialog'
+import { useUser } from '../../hooks'
 
 const PAGE_SIZE = 50
 
 function BoardsPage() {
-  const [ getBoards, { data: newData, previousData, loading, fetchMore }] = useLazyQuery<GetBoardsResponse>(getBoardsQuery, {
+  const [ getBoards, { data: newData, previousData, loading }] = useLazyQuery<GetBoardsResponse>(getBoardsQuery, {
     variables: {
       count: PAGE_SIZE,
       first: 0
-    },
-    fetchPolicy: 'no-cache'
+    }
   })
+  const { state: user } = useUser()
   const [ newBoardDialog, setNewBoardDialog ] = useState(false)
   const [ page, setPage ] = useState(1)
 
@@ -54,9 +55,11 @@ function BoardsPage() {
             Boards
           </Typography>
 
-          <Button onClick={handleNewBoardClick} startIcon={<NewBoardIcon />} variant="outlined">
-            Create Board
-          </Button>
+          {user.user && (
+            <Button onClick={handleNewBoardClick} startIcon={<NewBoardIcon />} variant="outlined">
+              Create Board
+            </Button>
+          )}
         </Box>
 
         <Divider sx={{ mb: 2 }} />

@@ -47,11 +47,12 @@ const cache = new InMemoryCache({
   }
 })
 
-const httpLink = createHttpLink({ uri: 'http://127.0.0.1:63796/graphql' })
+const httpLink = createHttpLink({ uri: 'http://127.0.0.1:53767/graphql' })
 
 const client = new ApolloClient({
-  link:  authLink.concat(httpLink),
-  cache: cache
+  link:           authLink.concat(httpLink),
+  cache:          cache,
+  defaultOptions: { query: { fetchPolicy: 'no-cache' }}
 })
 
 export default client

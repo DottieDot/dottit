@@ -1,28 +1,32 @@
-import { Page, Thread } from '../../model'
+import { BoardThreads, Thread } from '../../model'
 import { gql } from '@apollo/client'
 
 export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text' | 'userId'>
 
+export type ResponseBoard = BoardThreads<ResponseThread>
+
 export interface ResponseData {
-  getThreadsByBoard: Page<ResponseThread, Date>
+  getBoardByName: ResponseBoard
 }
 
 export interface RequestVariables {
   board: string,
-  first: number,
+  first: Date,
   count: number
 }
 
 export const query = gql`
-  query GetThreadsByBoard($board: UUID!, $first: DateTime!, $count: Int!) {
-    getThreadsByBoard(boardId: $board, first: $first, count: $count) {
-      items {
-        id
-        user
-        title
-        text
+  query GetThreadsByBoard($board: String!, $first: DateTime!, $count: Int!) {
+    getBoardByName(name: $board) {
+      threads(first: $first, count: $count) {
+        items {
+          id
+          user
+          title
+          text
+        }
+        next
       }
-      next
     }
   }
 `

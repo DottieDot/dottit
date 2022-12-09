@@ -5,28 +5,35 @@ use chrono::{DateTime, Utc};
 use shared_service::{
   events::ThreadDeletedEvent,
   messaging::EventBus,
-  model::{Page, Pagination}
+  model::{Page, Pagination},
+  validation::{
+    validators::StringLength, FieldValidator, ValidationError, ValidationResultBuilder, Validator
+  }
 };
 use thread_service_model::models::Thread;
 use uuid::Uuid;
 
-use crate::repos::{RepositoryError, ThreadRepository};
+use crate::{
+  model::dtos::CreateThreadDto,
+  repos::{RepositoryError, ThreadRepository}
+};
 
 use super::traits::{
   self, CreateThreadError, DeleteThreadError, GetThreadByIdError, GetThreadsByBoardError
 };
 
-#[derive(Clone)]
 pub struct ThreadService {
-  thread_repo: Arc<dyn ThreadRepository>,
-  event_bus:   Arc<EventBus>
+  thread_repo:             Arc<dyn ThreadRepository>,
+  event_bus:               Arc<EventBus>,
+  create_thread_validator: CreateThreadValidator
 }
 
 impl ThreadService {
   pub fn new(thread_repo: Arc<dyn ThreadRepository>, event_bus: Arc<EventBus>) -> Self {
     Self {
       thread_repo,
-      event_bus
+      event_bus,
+      create_thread_validator: CreateThreadValidator
     }
   }
 }
@@ -65,17 +72,18 @@ impl traits::ThreadService for ThreadService {
 
   async fn create_thread(
     &self,
-    board_id: Uuid,
-    user_id: Uuid,
-    title: String,
-    text: String
-  ) -> Result<Thread, traits::CreateThreadError> {
-    Ok(
+    dto: CreateThreadDto
+  ) -> Result<Result<Thread, ValidationError>, traits::CreateThreadError> {
+    if let Err(e) = self.create_thread_validator.validate(&dto).await {
+      return Ok(Err(e));
+    }
+
+    Ok(Ok(
       self
         .thread_repo
-        .create_thread(board_id, user_id, title, text)
+        .create_thread(dto.board_id, dto.user_id, dto.title, dto.text)
         .await?
-    )
+    ))
   }
 
   async fn delete_thread(&self, thread_id: Uuid) -> Result<(), DeleteThreadError> {
@@ -140,5 +148,17 @@ impl From<RepositoryError> for CreateThreadError {
     Self::Unknwon {
       source: Box::new(error)
     }
+  }
+}
+
+struct CreateThreadValidator;
+
+#[async_trait]
+impl Validator<CreateThreadDto> for CreateThreadValidator {
+  async fn validate(&self, dto: &CreateThreadDto) -> Result<(), ValidationError> {
+    ValidationResultBuilder::default()
+      .field(FieldValidator::new("title", &dto.title).length_range(8..=128))
+      .field(FieldValidator::new("text", &dto.text).length_range(8..=2046))
+      .finish()
   }
 }

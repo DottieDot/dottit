@@ -20,7 +20,7 @@
 #### Creation
 To create the Minikube VM, run the following command:
 ```sh
-minikube start --cpus=8 --memory 9965 --disk-size 96g
+minikube start --cpus=8 --memory 10240 --disk-size 192g
 ```
 
 #### Enable ingress

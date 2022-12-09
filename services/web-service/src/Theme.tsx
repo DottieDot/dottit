@@ -1,4 +1,4 @@
-import { createTheme, darkScrollbar, ThemeOptions, ThemeProvider, useMediaQuery } from '@mui/material'
+import { createTheme, ThemeOptions, ThemeProvider, useMediaQuery } from '@mui/material'
 import { useSettings } from './hooks'
 import { ReactNode, useEffect, useMemo } from 'react'
 
@@ -16,8 +16,7 @@ const darkTheme: ThemeOptions = {
     mode:      'dark',
     primary:   { main: '#20ba4e' },
     secondary: { main: '#ff8c00' }
-  },
-  components: { MuiCssBaseline: { styleOverrides: { body: darkScrollbar() }}}
+  }
 }
 
 function Theme({ children }: { children: ReactNode }) {

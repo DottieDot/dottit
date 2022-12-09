@@ -1,14 +1,18 @@
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
-use dyn_clone::DynClone;
-use shared_service::model::{Page, Pagination};
+use shared_service::{
+  model::{Page, Pagination},
+  validation::ValidationError
+};
 use std::error::Error as StdError;
 use thiserror::Error;
 use thread_service_model::models::Thread;
 use uuid::Uuid;
 
+use crate::model::dtos::CreateThreadDto;
+
 #[async_trait]
-pub trait ThreadService: Send + Sync + DynClone {
+pub trait ThreadService: Send + Sync {
   async fn get_thread_by_id(&self, id: Uuid) -> Result<Thread, GetThreadByIdError>;
 
   async fn get_threads_by_board(
@@ -25,15 +29,11 @@ pub trait ThreadService: Send + Sync + DynClone {
 
   async fn create_thread(
     &self,
-    board: Uuid,
-    user_id: Uuid,
-    title: String,
-    text: String
-  ) -> Result<Thread, CreateThreadError>;
+    dto: CreateThreadDto
+  ) -> Result<Result<Thread, ValidationError>, CreateThreadError>;
 
   async fn delete_thread(&self, thread_id: Uuid) -> Result<(), DeleteThreadError>;
 }
-dyn_clone::clone_trait_object!(ThreadService);
 
 #[derive(Error, Debug)]
 pub enum GetThreadByIdError {

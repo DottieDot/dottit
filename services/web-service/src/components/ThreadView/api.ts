@@ -12,7 +12,7 @@ export interface ResponseData {
 }
 
 export const query = gql`
-  query GetThreadById($threadId: ID!, $firstComment: Int!, $commentCount: Int!) {
+  query GetThreadById($threadId: UUID!, $firstComment: Int!, $commentCount: Int!) {
     getThreadById(threadId: $threadId) {
       comments(first: $firstComment, count: $commentCount) {
         items {
@@ -24,8 +24,6 @@ export const query = gql`
         next
       }
       id
-      media
-      score
       text
       title
       user

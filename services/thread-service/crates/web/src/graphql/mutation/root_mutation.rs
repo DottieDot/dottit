@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object, SimpleObject, Union};
-use shared_web::GqlContextExtensions;
-use thread_service_model::models;
-use thread_service_service::services::traits::{
-  CreateThreadError, DeleteThreadError, ThreadService
+use shared_web::{gql::ValidationError, GqlContextExtensions};
+use thread_service_service::{
+  model::dtos::CreateThreadDto,
+  services::traits::{CreateThreadError, DeleteThreadError, ThreadService}
 };
 use uuid::Uuid;
 
@@ -20,15 +20,24 @@ impl Mutation {
     board_id: Uuid,
     title: String,
     text: String
-  ) -> Result<CreateThreadErrorsResponse, CreateThreadError> {
+  ) -> Result<CreateThreadResult, CreateThreadError> {
     let service = ctx.data::<Arc<dyn ThreadService>>().unwrap();
     if let Some(user) = ctx.authenticated_user() {
-      service
-        .create_thread(board_id, user.user_id, title, text)
-        .await
-        .map(CreateThreadErrorsResponse::from)
+      let thread = service
+        .create_thread(CreateThreadDto {
+          user_id: user.user_id,
+          board_id,
+          title,
+          text
+        })
+        .await?;
+
+      match thread {
+        Ok(thread) => Ok(CreateThreadResult::Created(thread.into())),
+        Err(e) => Ok(CreateThreadResult::ValidationError(e.into()))
+      }
     } else {
-      Ok(CreateThreadErrorsResponse::Unauthorized(Unauthorized {
+      Ok(CreateThreadResult::Unauthorized(Unauthorized {
         message: "Unauthorized!".to_owned()
       }))
     }
@@ -51,13 +60,8 @@ pub struct Unauthorized {
 }
 
 #[derive(Union)]
-pub enum CreateThreadErrorsResponse {
+pub enum CreateThreadResult {
   Unauthorized(Unauthorized),
+  ValidationError(ValidationError),
   Created(Thread)
-}
-
-impl From<models::Thread> for CreateThreadErrorsResponse {
-  fn from(thread: models::Thread) -> Self {
-    Self::Created(thread.into())
-  }
 }

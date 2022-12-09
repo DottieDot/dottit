@@ -1,30 +1,49 @@
 import { Box, Fab, Grid } from '@mui/material'
-import { BoardHeader, ThreadFeed, ThreadView } from '../components'
+import { BoardHeader, ThreadFeed, ThreadView } from '../../components'
 import { Add as NewThreadIcon } from '@mui/icons-material'
 import { useParams } from 'react-router'
 import { memo, useCallback, useState } from 'react'
-import { NewThreadDialog } from '../dialogs'
+import { NewThreadDialog } from '../../dialogs'
+import { useQuery } from '@apollo/client'
+import { getBoardByNameQuery, GetBoardByNameResponse } from './api'
+import { useSearchParams } from 'react-router-dom'
 
 function BoardPage() {
-  const { board } = useParams<{ board: string, thread: string }>()
+  const { board: boardName } = useParams<{ board: string, thread: string }>()
   const [ newThread, setNewThread ] = useState(false)
-  const [ selectedThread, setSelectedThread ] = useState<string|null>(null)
+  const [ params, setParams ] = useSearchParams()
+  const selectedThread = params.get('thread')
+  const { data, loading } = useQuery<GetBoardByNameResponse>(getBoardByNameQuery, { variables: { name: boardName }})
 
   const handleNewThread = useCallback(() => {
     setNewThread(true)
   }, [])
 
   const handleThreadSelected = useCallback((threadId: string) => {
-    setSelectedThread(threadId)
-  }, [])
+    setParams({ thread: threadId })
+  }, [ setParams ])
 
 
-  if (typeof board !== 'string') return null
+  if (typeof boardName !== 'string') return null
+
+  if (loading || !data) return (
+    <span>
+      No Data
+    </span>
+  )
+
+  if (!data.getBoardByName) return (
+    <span>
+      No board
+    </span>
+  )
+
+  const board = data.getBoardByName
 
   return (
     <Grid sx={{ height: '100%' }} container>
       <NewThreadDialog
-        board={board}
+        board={board.id}
         onClose={setNewThread}
         open={newThread}
       />
@@ -47,12 +66,12 @@ function BoardPage() {
           }}
         >
           <div>
-            <BoardHeader board={board} />
+            <BoardHeader board={board.name} />
           </div>
 
           <div>
             <ThreadFeed
-              board={board}
+              board={board.name}
               onThreadSelected={handleThreadSelected}
             />
           </div>

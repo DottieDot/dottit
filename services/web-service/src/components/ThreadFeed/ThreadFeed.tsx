@@ -14,22 +14,25 @@ interface PostFeedProps {
 
 function ThreadFeed({ board, onThreadSelected }: PostFeedProps) {
   const ref = useRef<VariableSizeList>(null)
+  // eslint-disable-next-line
+  const date = useMemo(() => new Date(), [ board ])
   const { data, loading, fetchMore } = useQuery<ResponseData, RequestVariables>(query, {
     variables: {
       board,
       count: 20,
-      first: 0
+      first: date
     }
   })
 
-  const next = data?.getThreadsByBoard?.next
+  const next = data?.getBoardByName?.threads.next
 
   const loadMore = useCallback(() => {
-    (async () => {
+    const fn = async () => {
       if (!loading && next !== null) {
         await fetchMore({ variables: { first: next }})
       }
-    })()
+    }
+    fn().then()
   }, [ fetchMore, next, loading ])
 
   const handleScroll = useCallback((e: ListOnScrollProps) => {
@@ -48,7 +51,7 @@ function ThreadFeed({ board, onThreadSelected }: PostFeedProps) {
 
 
   const threads = useMemo(() => {
-    return data?.getThreadsByBoard?.items ?? []
+    return data?.getBoardByName.threads.items ?? []
   }, [ data ])
 
   return (

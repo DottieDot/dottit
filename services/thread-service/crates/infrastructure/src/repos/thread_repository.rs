@@ -48,7 +48,7 @@ impl repos::ThreadRepository for ThreadRepository {
   ) -> RepositoryResult<Page<Thread, DateTime<Utc>>> {
     let query_result = DbThread::find()
       .filter(thread::Column::UserId.eq(user))
-      .filter(thread::Column::CreatedAt.gte(pagination.first))
+      .filter(thread::Column::CreatedAt.lte(pagination.first))
       .order_by_desc(thread::Column::CreatedAt)
       .limit(pagination.count + 1)
       .all(self.db.as_ref())
@@ -88,7 +88,7 @@ impl repos::ThreadRepository for ThreadRepository {
   ) -> RepositoryResult<Page<Thread, DateTime<Utc>>> {
     let query_result = DbThread::find()
       .filter(thread::Column::BoardId.eq(board_id))
-      .filter(thread::Column::CreatedAt.gte(pagination.first))
+      .filter(thread::Column::CreatedAt.lte(pagination.first))
       .order_by_desc(thread::Column::CreatedAt)
       .limit(pagination.count + 1)
       .all(self.db.as_ref())
