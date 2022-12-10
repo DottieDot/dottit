@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
 use async_graphql::{Context, Object};
-use comment_service_model::models::Pagination;
+use chrono::{DateTime, Utc};
 use comment_service_service::services::traits::{CommentService, GetCommentsByThreadIdError};
+use shared_service::model::Pagination;
 use uuid::Uuid;
 
 use super::{paged::Paged, Comment};
@@ -21,13 +22,13 @@ impl Thread {
   async fn comments(
     &self,
     ctx: &Context<'_>,
-    first: u64,
+    first: DateTime<Utc>,
     count: u64
-  ) -> Result<Paged<Comment>, GetCommentsByThreadIdError> {
+  ) -> Result<Paged<Comment, DateTime<Utc>>, GetCommentsByThreadIdError> {
     let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
 
     let comments = service
-      .get_comments_by_thread_id(&self.id.to_string(), Pagination { first, count })
+      .get_comments_by_thread_id(self.id, Pagination { first, count })
       .await?
       .inner_into::<Comment>();
 

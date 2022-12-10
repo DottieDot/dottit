@@ -1,10 +1,11 @@
-use super::UuidString;
+use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 #[derive(Clone, Debug)]
 pub struct Comment {
-  pub id:        UuidString,
-  pub thread_id: UuidString,
-  pub user:      String,
-  pub text:      String,
-  pub score:     i32
+  pub id:         Uuid,
+  pub thread_id:  Uuid,
+  pub user_id:    Uuid,
+  pub text:       String,
+  pub created_at: DateTime<Utc>
 }

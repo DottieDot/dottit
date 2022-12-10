@@ -1,18 +1,18 @@
 use super::model::comment;
 
-use sea_orm::DbErr;
 use comment_service_service::repos::RepositoryError;
+use sea_orm::DbErr;
 
 use comment_service_model::models::Comment;
 
 impl From<comment::Model> for Comment {
   fn from(comment: comment::Model) -> Self {
     Self {
-      id:        comment.id.to_string(),
-      thread_id: comment.thread_id.to_string(),
-      user:      comment.user,
-      text:      comment.text,
-      score:     comment.score
+      id:         comment.id,
+      thread_id:  comment.thread_id,
+      user_id:    comment.user_id,
+      text:       comment.text,
+      created_at: comment.created_at.into()
     }
   }
 }

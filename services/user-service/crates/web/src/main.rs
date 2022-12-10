@@ -8,21 +8,23 @@ use axum::{
   routing::{get, post},
   Router
 };
-use shared_service::service_mediator::MediatorProducer;
+use shared_service::service_mediator::{MediatorConsumer, MediatorProducer};
 use shared_web::{middleware::auth, AuthenticatedUser};
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
 use user_service_infrastructure::repos::UserRepository;
 use user_service_service::services::UserService;
 
 use self::{
   database::Database,
-  graphql::{build_schema, AppSchema}
+  graphql::{build_schema, AppSchema},
+  mediator_handlers::register_mediator_handlers
 };
 
 mod database;
 mod event_bus;
 pub mod graphql;
+mod mediator_handlers;
 
 async fn graphql_handler(
   Extension(user): Extension<Option<AuthenticatedUser>>,
@@ -58,14 +60,24 @@ async fn main() {
 
   db.migrate().await;
 
+  // event bus
+  let event_bus = event_bus::connect().await;
+
   // mediator
-  let mediator_producer = Arc::new(MediatorProducer::new("http://mediator").unwrap());
+  let mediator_consumer = Arc::new(MediatorConsumer::new(event_bus.clone()));
+  let mediator_producer =
+    Arc::new(MediatorProducer::new(env::var("MEDIATOR_URL").unwrap()).unwrap());
 
   // services
   let user_repo = Arc::new(UserRepository::new(db.connection().clone()));
   let user_service = Arc::new(UserService::new(user_repo, mediator_producer));
 
-  let schema = build_schema(user_service).await;
+  let schema = build_schema(user_service.clone()).await;
+
+  // mediator handler
+  register_mediator_handlers(mediator_consumer.clone(), user_service.clone())
+    .await
+    .unwrap();
 
   // Web
   let router = Router::<axum::body::Body>::new()

@@ -59,8 +59,8 @@ impl<'a, T> FieldValidator<'a, T> {
     }
   }
 
-  pub fn add_error(&mut self, error: String) {
-    self.errors.push(error)
+  pub fn add_error(&mut self, error: impl Into<String>) {
+    self.errors.push(error.into())
   }
 
   pub fn error_field(self) -> Option<ValidationErrorField> {

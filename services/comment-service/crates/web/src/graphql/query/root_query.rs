@@ -1,10 +1,11 @@
 use std::sync::Arc;
 
-use async_graphql::{Context, Object, ID};
-use comment_service_model::models::Pagination;
+use async_graphql::{Context, Object};
+use chrono::{DateTime, Utc};
 use comment_service_service::services::traits::{
   CommentService, GetCommentByIdError, GetCommentsByThreadIdError
 };
+use shared_service::model::Pagination;
 use uuid::Uuid;
 
 use super::{comment::Comment, paged::Paged, thread::Thread};
@@ -16,15 +17,15 @@ impl Query {
   async fn get_comments_by_thread(
     &self,
     ctx: &Context<'_>,
-    thread_id: ID,
-    first: u64,
+    thread_id: Uuid,
+    first: DateTime<Utc>,
     count: u64
-  ) -> Result<Paged<Comment>, GetCommentsByThreadIdError> {
+  ) -> Result<Paged<Comment, DateTime<Utc>>, GetCommentsByThreadIdError> {
     let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
 
     Ok(
       service
-        .get_comments_by_thread_id(&thread_id, Pagination { first, count })
+        .get_comments_by_thread_id(thread_id, Pagination { first, count })
         .await?
         .inner_into::<Comment>()
         .into()
@@ -34,7 +35,7 @@ impl Query {
   async fn get_comment(
     &self,
     ctx: &Context<'_>,
-    comment_id: ID
+    comment_id: Uuid
   ) -> Result<Comment, GetCommentByIdError> {
     self.find_comment_by_id(ctx, comment_id).await
   }
@@ -43,11 +44,11 @@ impl Query {
   async fn find_comment_by_id(
     &self,
     ctx: &Context<'_>,
-    id: ID
+    id: Uuid
   ) -> Result<Comment, GetCommentByIdError> {
     let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
 
-    service.get_comment_by_id(&id).await.map(Comment::from)
+    service.get_comment_by_id(id).await.map(Comment::from)
   }
 
   #[graphql(entity)]

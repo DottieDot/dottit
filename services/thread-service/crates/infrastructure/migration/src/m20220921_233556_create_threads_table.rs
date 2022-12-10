@@ -40,6 +40,26 @@ impl MigrationTrait for Migration {
           .col(Thread::UserId)
           .take()
       )
+      .await?;
+
+    manager
+      .create_index(
+        Index::create()
+          .name("thread_board_index")
+          .table(Thread::Table)
+          .col(Thread::BoardId)
+          .take()
+      )
+      .await?;
+
+    manager
+      .create_index(
+        Index::create()
+          .name("thread_created_at_index")
+          .table(Thread::Table)
+          .col(Thread::CreatedAt)
+          .take()
+      )
       .await
   }
 

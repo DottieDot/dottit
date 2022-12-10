@@ -19,13 +19,13 @@ impl MigrationTrait for Migration {
               .extra("DEFAULT (gen_random_uuid())".to_owned())
           )
           .col(ColumnDef::new(Comment::ThreadId).uuid().not_null())
-          .col(ColumnDef::new(Comment::User).string().not_null())
+          .col(ColumnDef::new(Comment::UserId).uuid().not_null())
           .col(ColumnDef::new(Comment::Text).string().not_null())
           .col(
-            ColumnDef::new(Comment::Score)
-              .integer()
+            ColumnDef::new(Comment::CreatedAt)
+              .timestamp_with_time_zone()
               .not_null()
-              .default(0)
+              .extra("DEFAULT CURRENT_TIMESTAMP".to_owned())
           )
           .take()
       )
@@ -36,7 +36,7 @@ impl MigrationTrait for Migration {
         Index::create()
           .name("comment_user_index")
           .table(Comment::Table)
-          .col(Comment::User)
+          .col(Comment::UserId)
           .take()
       )
       .await?;
@@ -47,6 +47,16 @@ impl MigrationTrait for Migration {
           .name("comment_thread_index")
           .table(Comment::Table)
           .col(Comment::ThreadId)
+          .take()
+      )
+      .await?;
+
+    manager
+      .create_index(
+        Index::create()
+          .name("comment_created_at_index")
+          .table(Comment::Table)
+          .col(Comment::CreatedAt)
           .take()
       )
       .await
@@ -65,7 +75,7 @@ enum Comment {
   Table,
   Id,
   ThreadId,
-  User,
+  UserId,
   Text,
-  Score
+  CreatedAt
 }

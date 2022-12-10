@@ -1,10 +1,9 @@
-use std::str::FromStr;
-
-use async_graphql::{Object, ID};
+use async_graphql::Object;
+use chrono::{DateTime, Utc};
 use comment_service_service::models::dtos::CommentDto;
 use uuid::Uuid;
 
-use super::thread::Thread;
+use super::{thread::Thread, User};
 
 #[derive(Debug)]
 pub struct Comment {
@@ -13,30 +12,28 @@ pub struct Comment {
 
 #[Object]
 impl Comment {
-  async fn id(&self) -> ID {
+  async fn id(&self) -> Uuid {
     self.comment.id.clone().into()
-  }
-
-  async fn thread_id(&self) -> ID {
-    ID::from(&self.comment.thread_id)
   }
 
   async fn thread(&self) -> Thread {
     Thread {
-      id: Uuid::from_str(&self.comment.thread_id).unwrap()
+      id: self.comment.thread_id
     }
   }
 
-  async fn user(&self) -> &String {
-    &self.comment.user
+  async fn user(&self) -> User {
+    User {
+      id: self.comment.user_id
+    }
   }
 
   async fn text(&self) -> &String {
     &self.comment.text
   }
 
-  async fn score(&self) -> i32 {
-    self.comment.score
+  async fn created_at(&self) -> DateTime<Utc> {
+    self.comment.created_at
   }
 }
 

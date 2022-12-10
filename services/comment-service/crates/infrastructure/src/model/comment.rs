@@ -6,11 +6,11 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "comment")]
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
-  pub id:        Uuid,
-  pub thread_id: Uuid,
-  pub user:      String,
-  pub text:      String,
-  pub score:     i32
+  pub id:         Uuid,
+  pub thread_id:  Uuid,
+  pub user_id:    Uuid,
+  pub text:       String,
+  pub created_at: DateTimeWithTimeZone
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

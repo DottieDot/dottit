@@ -27,6 +27,8 @@ spec:
           env:
             - name: DATABASE_URL
               value: "postgres://postgres:password@comment-service-postgres:5432/comment_service"
+            - name: MEDIATOR_URL
+              value: "http://mediator"
             - name: RABBITMQ_HOST
               value: "message-bus:5672"
             - name: RABBITMQ_USER

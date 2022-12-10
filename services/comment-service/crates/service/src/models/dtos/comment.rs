@@ -1,22 +1,24 @@
-use comment_service_model::models::{Comment, UuidString};
+use chrono::{DateTime, Utc};
+use comment_service_model::models::Comment;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct CommentDto {
-  pub id:        UuidString,
-  pub thread_id: UuidString,
-  pub user:      String,
-  pub text:      String,
-  pub score:     i32
+  pub id:         Uuid,
+  pub thread_id:  Uuid,
+  pub user_id:    Uuid,
+  pub text:       String,
+  pub created_at: DateTime<Utc>
 }
 
 impl From<Comment> for CommentDto {
   fn from(comment: Comment) -> Self {
     Self {
-      id:        comment.id,
-      thread_id: comment.thread_id,
-      user:      comment.user,
-      text:      comment.text,
-      score:     comment.score
+      id:         comment.id,
+      thread_id:  comment.thread_id,
+      user_id:    comment.user_id,
+      text:       comment.text,
+      created_at: comment.created_at
     }
   }
 }

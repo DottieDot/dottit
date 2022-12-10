@@ -7,7 +7,8 @@ use axum::{
   routing::{get, post},
   Router
 };
-use std::sync::Arc;
+use shared_service::service_mediator::MediatorProducer;
+use std::{env, sync::Arc};
 
 use comment_service_infrastructure::repos::CommentRepository;
 use comment_service_service::services::CommentService;
@@ -47,9 +48,13 @@ async fn main() {
   // event bus
   // let _ = event_bus::connect().await;
 
+  // mediator
+  let mediator_producer =
+    Arc::new(MediatorProducer::new(env::var("MEDIATOR_URL").unwrap()).unwrap());
+
   // services
   let comment_repo = Arc::new(CommentRepository::new(db.connection().clone()));
-  let comment_service = Arc::new(CommentService::new(comment_repo));
+  let comment_service = Arc::new(CommentService::new(comment_repo, mediator_producer));
 
   let schema = build_schema(comment_service).await;
 
