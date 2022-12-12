@@ -12,31 +12,21 @@ import { memo, useCallback, useState } from 'react'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { useMutation } from '@apollo/client'
-import { createThreadQuery, CreateThreadResponse } from './api'
-import { useSearchParams } from 'react-router-dom'
+import { createCommentQuery, CreateCommentResponse } from './api'
 
-export interface NewThreadDialogProps {
+export interface NewCommentDialogProps {
   open: boolean
   onClose: (open: boolean) => void
-  board: string
+  threadId: string
 }
 
-function NewThreadDialog({ open, onClose, board }: NewThreadDialogProps) {
-  const [ createThread ] = useMutation<CreateThreadResponse>(createThreadQuery)
+function NewCommentDialog({ open, onClose, threadId }: NewCommentDialogProps) {
+  const [ createThread ] = useMutation<CreateCommentResponse>(createCommentQuery)
   const [ error, setError ] = useState<string | null>('')
-  const[ , setParams ] = useSearchParams()
 
   const formik = useFormik({
-    initialValues: {
-      title: '',
-      text:  ''
-    },
+    initialValues:    { text: '' },
     validationSchema: Yup.object({
-      title: Yup.string()
-        .trim()
-        .min(8, 'Must be at least 8 characters')
-        .max(128, 'Must be at most 128 characters')
-        .required('Required'),
       text: Yup.string()
         .trim()
         .min(8, 'Must be at least 8 characters')
@@ -46,19 +36,17 @@ function NewThreadDialog({ open, onClose, board }: NewThreadDialogProps) {
     onSubmit: async (values, { setFieldError }) => {
       const response = await createThread({
         variables: {
-          title:   values.title,
-          text:    values.text,
-          boardId: board
+          text:     values.text,
+          threadId: threadId
         }
       })
 
       if (response.data) {
-        const result = response.data.createThread
+        const result = response.data.createComment
         switch (result.__typename) {
-        case 'Thread':
+        case 'Comment':
           handleClose(undefined, undefined, true)
           setError(null)
-          setParams({ thread: result.id })
           break
         case 'Unauthenticated':
           setError(result.message)
@@ -75,7 +63,7 @@ function NewThreadDialog({ open, onClose, board }: NewThreadDialogProps) {
     validateOnMount: true
   })
 
-  const sharedProps = (name: 'title' | 'text') => ({
+  const sharedProps = (name: 'text') => ({
     fullWidth:  true,
     required:   true,
     name:       name,
@@ -101,18 +89,10 @@ function NewThreadDialog({ open, onClose, board }: NewThreadDialogProps) {
         {formik.isSubmitting && <LinearProgress />}
 
         <DialogTitle>
-          New Thread
+          New Comment
         </DialogTitle>
 
         <DialogContent>
-          <TextField
-            label="Title"
-            margin="normal"
-            placeholder="An interesting title."
-            type="text"
-            {...sharedProps('title')}
-          />
-
           <TextField
             label="Text"
             margin="normal"
@@ -150,4 +130,4 @@ function NewThreadDialog({ open, onClose, board }: NewThreadDialogProps) {
   )
 }
 
-export default memo(NewThreadDialog)
+export default memo(NewCommentDialog)

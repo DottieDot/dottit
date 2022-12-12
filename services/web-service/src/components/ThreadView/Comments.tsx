@@ -19,9 +19,10 @@ function Comments({ comments, sx, loadMore }: Props) {
 
   return (
     <Fragment>
+
       <Stack gap={2} sx={sx}>
-        {comments.map(comment => (
-          <Comment key={comment.id} {...comment} />
+        {comments.map(({ id, text, user: { username }}) => (
+          <Comment key={id} text={text} user={username} />
         ))}
       </Stack>
 

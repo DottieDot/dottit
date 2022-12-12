@@ -8,7 +8,7 @@ use comment_service_service::services::traits::{
 use shared_service::model::Pagination;
 use uuid::Uuid;
 
-use super::{comment::Comment, paged::Paged, thread::Thread};
+use super::{comment::Comment, paged::Paged, thread::Thread, User};
 
 pub struct Query;
 
@@ -54,5 +54,10 @@ impl Query {
   #[graphql(entity)]
   async fn get_thread_by_id(&self, id: Uuid) -> Thread {
     Thread { id }
+  }
+
+  #[graphql(entity)]
+  async fn get_user_by_id(&self, id: Uuid) -> User {
+    User { id }
   }
 }

@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
-use async_graphql::{Context, Object, SimpleObject, Union};
-use shared_web::{gql::ValidationError, GqlContextExtensions};
+use async_graphql::{Context, Object, Union};
+use shared_web::{
+  gql::{Unauthenticated, ValidationError},
+  GqlContextExtensions
+};
 use thread_service_service::{
   model::dtos::CreateThreadDto,
   services::traits::{CreateThreadError, DeleteThreadError, ThreadService}
@@ -37,9 +40,7 @@ impl Mutation {
         Err(e) => Ok(CreateThreadResult::ValidationError(e.into()))
       }
     } else {
-      Ok(CreateThreadResult::Unauthorized(Unauthorized {
-        message: "Unauthorized!".to_owned()
-      }))
+      Ok(CreateThreadResult::Unauthenticated(Unauthenticated::new()))
     }
   }
 
@@ -54,14 +55,9 @@ impl Mutation {
   }
 }
 
-#[derive(SimpleObject)]
-pub struct Unauthorized {
-  message: String
-}
-
 #[derive(Union)]
 pub enum CreateThreadResult {
-  Unauthorized(Unauthorized),
+  Unauthenticated(Unauthenticated),
   ValidationError(ValidationError),
   Created(Thread)
 }

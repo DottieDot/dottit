@@ -1,52 +1,63 @@
 import { Box, ButtonBase, IconButton, Typography } from '@mui/material'
 import { North as UpvoteIcon, ChatBubbleOutline as CommentsIcon, South as DownvoteIcon } from '@mui/icons-material'
 import { memo, useCallback } from 'react'
-
-export interface ThreadCardThread {
-  id: string
-  title: string
-  userId?: string
-  boardId?: string
-  text: string | null
-}
+import UserLink from './UserLink'
 
 export interface ThreadCardProps {
-  thread: ThreadCardThread,
+  id: string
+  title: string
+  username?: string
+  text: string | null
   onClick: (threadId: string) => void
 }
 
-function ThreadCard({ thread, onClick }: ThreadCardProps) {
+function ThreadCard({ id, title, username, text, onClick }: ThreadCardProps) {
   const handleClick = useCallback(() => {
-    onClick(thread.id)
-  }, [ onClick, thread.id ])
+    onClick(id)
+  }, [ onClick, id ])
 
   return (
-    <ButtonBase
-      component={Box}
-      onClick={handleClick}
+    <Box
       sx={{
-        p:            2,
         borderBottom: '4px solid #444',
         width:        '100%',
         display:      'block'
       }}
     >
-      <Typography variant="h5" gutterBottom>
-        {thread.title}
-      </Typography>
+      <ButtonBase
+        component={Box}
+        onClick={handleClick}
+        sx={{
+          display: 'block',
+          p:       2
+        }}
+      >
+        <Typography variant="h5" gutterBottom>
+          {title}
+        </Typography>
 
-      <Typography sx={{ mb: 2 }} variant="body2">
-        {thread.text}
-      </Typography>
+        <Typography variant="body2">
+          {text}
+        </Typography>
+      </ButtonBase>
 
-      <Box sx={{ display: 'flex' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          p:       2,
+          pt:      0
+        }}
+      >
         <Box sx={{ flex: 1 }}>
           <Box>
-            {thread.userId && (
+            {username && (
               <Typography color="text.secondary" sx={{ fontSize: 14 }}>
                 By
                 {' '}
-                {thread.userId}
+
+                <UserLink>
+                  {username}
+                </UserLink>
               </Typography>
             )}
           </Box>
@@ -100,7 +111,7 @@ function ThreadCard({ thread, onClick }: ThreadCardProps) {
           </IconButton>
         </Box>
       </Box>
-    </ButtonBase>
+    </Box>
   )
 }
 

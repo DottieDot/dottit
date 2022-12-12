@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use thread_service_model::models::Thread as ThreadModel;
 use uuid::Uuid;
 
-use super::Board;
+use super::{Board, User};
 
 #[derive(Debug)]
 pub struct Thread {
@@ -20,8 +20,8 @@ impl Thread {
     Board::new(self.thread.board_id)
   }
 
-  async fn user(&self) -> Uuid {
-    self.thread.user_id
+  async fn user(&self) -> User {
+    User::new(self.thread.user_id)
   }
 
   async fn title(&self) -> &String {

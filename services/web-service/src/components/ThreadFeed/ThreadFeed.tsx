@@ -78,9 +78,18 @@ function ThreadFeed({ board, onThreadSelected }: PostFeedProps) {
             items={threads}
             onScroll={handleScroll}
             ref={ref}
-            renderItem={(index) => (
-              <ThreadCard onClick={onThreadSelected} thread={threads[index]} />
-            )}
+            renderItem={(index) => {
+              const { id, title, user, text } = threads[index]
+              return (
+                <ThreadCard
+                  id={id}
+                  onClick={onThreadSelected}
+                  text={text}
+                  title={title}
+                  username={user.username}
+                />
+              )
+            }}
             width={width}
           />
         )}

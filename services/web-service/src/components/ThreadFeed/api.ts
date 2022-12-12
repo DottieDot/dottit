@@ -1,7 +1,7 @@
-import { BoardThreads, Thread } from '../../model'
+import { BoardThreads, Thread, ThreadUser, User } from '../../model'
 import { gql } from '@apollo/client'
 
-export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text' | 'userId'>
+export type ResponseThread = Pick<Thread, 'id' | 'title' | 'text'> & ThreadUser<Pick<User, 'username'>>
 
 export type ResponseBoard = BoardThreads<ResponseThread>
 
@@ -21,7 +21,10 @@ export const query = gql`
       threads(first: $first, count: $count) {
         items {
           id
-          user
+          user {
+            id
+            username
+          }
           title
           text
         }

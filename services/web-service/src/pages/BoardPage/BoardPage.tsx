@@ -7,6 +7,7 @@ import { NewThreadDialog } from '../../dialogs'
 import { useQuery } from '@apollo/client'
 import { getBoardByNameQuery, GetBoardByNameResponse } from './api'
 import { useSearchParams } from 'react-router-dom'
+import { useUser } from '../../hooks'
 
 function BoardPage() {
   const { board: boardName } = useParams<{ board: string, thread: string }>()
@@ -14,6 +15,7 @@ function BoardPage() {
   const [ params, setParams ] = useSearchParams()
   const selectedThread = params.get('thread')
   const { data, loading } = useQuery<GetBoardByNameResponse>(getBoardByNameQuery, { variables: { name: boardName }})
+  const { state: user } = useUser()
 
   const handleNewThread = useCallback(() => {
     setNewThread(true)
@@ -77,27 +79,31 @@ function BoardPage() {
           </div>
         </Box>
 
-        <Fab
-          color="primary"
-          onClick={handleNewThread}
-          sx={{
-            position: 'absolute',
-            right:    0,
-            bottom:   0,
-            mb:       2,
-            mr:       2
-          }}
-        >
-          <NewThreadIcon />
-        </Fab>
+        {user.user && (
+          <Fab
+            color="primary"
+            onClick={handleNewThread}
+            sx={{
+              position: 'absolute',
+              right:    0,
+              bottom:   0,
+              mb:       2,
+              mr:       2
+            }}
+          >
+            <NewThreadIcon />
+          </Fab>
+        )}
       </Grid>
 
       <Grid
         md={8}
         sx={{
-          borderLeft: '2px solid #444',
-          height:     '100%',
-          overflowX:  'auto'
+          borderLeft:    '2px solid #444',
+          height:        '100%',
+          overflowX:     'auto',
+          display:       'flex',
+          flexDirection: 'column'
         }}
         xs={0}
         item

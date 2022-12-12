@@ -1,6 +1,7 @@
 import { alpha, Box, Card, CardContent, IconButton, styled, Typography } from '@mui/material'
 import { North as UpvoteIcon, South as DownvoteIcon } from '@mui/icons-material'
 import { memo } from 'react'
+import UserLink from '../UserLink'
 
 const Content = styled(CardContent)({
   display:             'grid',
@@ -21,10 +22,9 @@ const Score = styled('div')(({ theme }) => ({
 export interface CommentProps {
   user: string
   text: string
-  score: number
 }
 
-function Comment({ user, text, score }: CommentProps) {
+function Comment({ user, text }: CommentProps) {
   return (
     <Card>
       <Content>
@@ -34,7 +34,7 @@ function Comment({ user, text, score }: CommentProps) {
           </IconButton>
 
           <Box component="span" sx={{ cursor: 'default' }}>
-            {score}
+            0
           </Box>
 
           <IconButton size="small">
@@ -49,7 +49,9 @@ function Comment({ user, text, score }: CommentProps) {
           }}
         >
           <Typography variant="subtitle1" gutterBottom>
-            {user}
+            <UserLink>
+              {user}
+            </UserLink>
           </Typography>
 
           <Typography sx={{ whiteSpace: 'pre-wrap' }} variant="body2">

@@ -1,22 +1,28 @@
 import { useQuery } from '@apollo/client'
 import { query, ResponseData } from './api'
-import { Card, CardContent, Container, Typography } from '@mui/material'
+import { Box, Card, CardContent, Container, Fab, Typography, useTheme } from '@mui/material'
 import ThreadHeader from '../ThreadHeader'
-import { Fragment, useCallback } from 'react'
+import { Fragment, useCallback, useState } from 'react'
 import Comments from './Comments'
+import { Comment as NewCommentIcon } from '@mui/icons-material'
+import { NewCommentDialog } from '../../dialogs'
+import { useUser } from '../../hooks'
 
 interface Props {
   threadId: string
 }
 
 export default function Thread({ threadId }: Props) {
+  const theme = useTheme()
   const { data, loading, fetchMore } = useQuery<ResponseData>(query, {
     variables: {
       threadId,
-      firstComment: 0,
+      firstComment: new Date(),
       commentCount: 50
     }
   })
+  const [ newComment, setNewComment ] = useState(false)
+  const { state: user } = useUser()
 
   const next = data?.getThreadById.comments.next
 
@@ -26,6 +32,10 @@ export default function Thread({ threadId }: Props) {
       fetchMore({ variables: { firstComment: next }})
     }
   }, [ loading, next, fetchMore ])
+
+  const handleNewCommentClick = useCallback(() => {
+    setNewComment(true)
+  }, [])
 
   if (loading || !data?.getThreadById) {
     return null
@@ -39,7 +49,15 @@ export default function Thread({ threadId }: Props) {
         thread={thread.title}
       />
 
-      <Container maxWidth="md">
+      <Container
+        maxWidth="md"
+        sx={{
+          display:       'flex',
+          flexDirection: 'column',
+          position:      'relative',
+          flex:          1
+        }}
+      >
         <Card sx={{ mt: 2 }}>
           <CardContent>
             <Typography
@@ -56,7 +74,31 @@ export default function Thread({ threadId }: Props) {
         </Typography>
 
         <Comments comments={thread.comments.items} loadMore={handleLoadMore} sx={{ py: 2 }} />
+
+
+        <Box
+          sx={{
+            position: 'relative',
+            flex:     1
+          }}
+        >
+          {user.user && (
+            <Fab
+              color="secondary"
+              onClick={handleNewCommentClick}
+              sx={{
+                position: 'absolute',
+                bottom:   theme.spacing(2),
+                right:    0
+              }}
+            >
+              <NewCommentIcon />
+            </Fab>
+          )}
+        </Box>
       </Container>
+
+      <NewCommentDialog onClose={setNewComment} open={newComment} threadId={thread.id} />
     </Fragment>
   )
 }
