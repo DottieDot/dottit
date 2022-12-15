@@ -1,18 +1,18 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct EventMetadata<'a> {
   pub exchange:        ExchangeMetadata<'a>,
   pub queue:           QueueMetadata<'a>,
   pub consume_options: ConsumeOptions
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct ExchangeMetadata<'a> {
   pub name:          &'a str,
   pub exchange_type: EventExchangeType,
   pub options:       ExchangeOptions
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum EventExchangeType {
   Direct,
   Topic,
@@ -20,7 +20,7 @@ pub enum EventExchangeType {
   FanOut
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default, Clone, Copy, Debug)]
 pub struct ExchangeOptions {
   pub passive:     bool,
   pub durable:     bool,
@@ -29,14 +29,14 @@ pub struct ExchangeOptions {
   pub no_wait:     bool
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct QueueMetadata<'a> {
   pub routing_key:  &'a str,
   pub options:      QueueOptions,
   pub bind_options: QueueBindOptions
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default, Clone, Copy, Debug)]
 pub struct QueueOptions {
   pub passive:     bool,
   pub durable:     bool,
@@ -45,12 +45,12 @@ pub struct QueueOptions {
   pub no_wait:     bool
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default, Clone, Copy, Debug)]
 pub struct QueueBindOptions {
   pub no_wait: bool
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default, Clone, Copy, Debug)]
 pub struct ConsumeOptions {
   pub no_local:  bool,
   pub no_ack:    bool,

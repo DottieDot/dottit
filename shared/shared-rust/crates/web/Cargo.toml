@@ -16,3 +16,6 @@ async-graphql = { version = "^4.0.6", features = [
 axum = "^0.5.1"
 uuid = "1.2.2"
 dottit-shared-service = { path = "../service" }
+tracing = { workspace = true }
+tracing-subscriber = "0.3"
+anyhow = "1.0.66"

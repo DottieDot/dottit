@@ -1,4 +1,5 @@
 use thiserror::Error;
+use tracing::{debug, info};
 
 use crate::messaging::{FromEventData, FromEventDataError, ToEventData, ToEventDataError};
 
@@ -17,11 +18,14 @@ impl MediatorProducer {
     })
   }
 
+  #[tracing::instrument(skip_all)]
   pub async fn query<Q>(&self, query: Q) -> Result<Q::Response, MediatorProducerError>
   where
     Q: MediatorQuery + ToEventData,
     Q::Response: FromEventData
   {
+    info!("Sending mediator query {}", Q::name());
+
     let url = format!("{}/query/{}", self.base_url, Q::name());
     let bytes = self
       .client
@@ -31,6 +35,8 @@ impl MediatorProducer {
       .await?
       .bytes()
       .await?;
+
+    debug!("Mediator responded with {} bytes", bytes.len());
 
     Ok(Q::Response::from_event_data(&bytes)?)
   }

@@ -20,7 +20,7 @@ use shared_service::service_mediator::{
   queries::{ApiTokenForUser, CreateApiTokenForUserQuery},
   MediatorConsumer
 };
-use shared_web::{middleware::auth, AuthenticatedUser};
+use shared_web::{middleware::auth, setup_logger, AuthenticatedUser};
 use uuid::Uuid;
 
 use self::{
@@ -77,6 +77,8 @@ async fn health_probe_handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+  setup_logger().unwrap();
+
   let event_bus = event_bus::connect().await;
 
   let consumer = MediatorConsumer::new(event_bus);

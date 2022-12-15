@@ -9,7 +9,7 @@ use axum::{
   Router
 };
 use shared_service::service_mediator::{MediatorConsumer, MediatorProducer};
-use shared_web::{middleware::auth, AuthenticatedUser};
+use shared_web::{middleware::auth, setup_logger, AuthenticatedUser};
 use std::{env, sync::Arc};
 
 use user_service_infrastructure::repos::UserRepository;
@@ -55,6 +55,8 @@ async fn health_probe_handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+  setup_logger().unwrap();
+
   // database
   let db = Database::connect().await;
 

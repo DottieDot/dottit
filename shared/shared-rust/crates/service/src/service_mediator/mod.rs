@@ -7,4 +7,4 @@ pub use mediator_consumer::*;
 pub use mediator_producer::*;
 pub use mediator_query::*;
 
-// https://www.plantuml.com/plantuml/png/RSwn2eD030RWFK-HNNm1ASKwTElGzWc2b-50JuavIz--9pI6OgSxml_bJxieYUPnWBcyiOyp9SKdonfxllmCRnmYwIJ_aXq0zHfNKdOCziFwl6kiAcnA9WMyPvRt4NPWsStPiC7h92yIOu7D-M7WybJliZH-2n-yv46TUgNVkadRufqkZwKjfv37uGC0
+// http://www.plantuml.com/plantuml/png/RP5H2eCm38RVSug-YnUGCTpsB4ntWgg11THAcpfs-xLiMHNwf2J__tr1QyVQifydMCEJ1bhrmkg1TgC1BuTXWoDfDlOmx7JV4pTjhdu5q0FJfXaJ4UHDbUS_KXM5ga9c6LNhqRu1P1DJulYcxhwVo3r_GTd5d6XtD3RgPXRdPxGmeboJheO4E9K9S11rwFp4-xhaqfcnBQIabcrUBHyYTYLPHTjgGlr5d5Fda0A2EdZ3h_m0

@@ -17,6 +17,7 @@ impl MediatorConsumer {
     Self { event_bus }
   }
 
+  #[tracing::instrument(skip_all)]
   pub async fn subscribe<Q, Fut>(&self, handler: impl Fn(Q) -> Fut + Send + Clone + 'static)
   where
     Q: MediatorQuery + FromEventData + Send,

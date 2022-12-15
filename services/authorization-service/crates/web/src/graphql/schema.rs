@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use async_graphql::{EmptySubscription, Object, Schema};
+use async_graphql::{extensions::Tracing, EmptySubscription, Object, Schema};
 use authorization_service_service::service::traits::AuthTokenService;
 
 use super::mutation::Mutation;
@@ -19,6 +19,7 @@ impl Query {
 pub async fn build_schema(auth_service: Arc<dyn AuthTokenService>) -> AppSchema {
   Schema::build(Query, Mutation, EmptySubscription)
     .data(auth_service)
+    .extension(Tracing)
     .enable_federation()
     .finish()
 }

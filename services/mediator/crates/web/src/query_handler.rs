@@ -18,6 +18,7 @@ use shared_service::{
 };
 use thiserror::Error;
 use tokio::time::timeout;
+use tracing::{debug, info};
 use uuid::Uuid;
 
 use crate::mediator_id::MediatorId;
@@ -37,10 +38,11 @@ impl QueryHandler {
     }
   }
 
+  #[tracing::instrument(skip_all)]
   pub async fn handle_query(&self, query: String, body: Vec<u8>) -> Result<Vec<u8>, QueryError> {
     let query_id = Uuid::new_v4();
 
-    println!("Querying {query} with {query_id}");
+    info!("Querying {query} with {query_id}");
 
     self
       .event_bus
@@ -68,23 +70,30 @@ impl QueryHandler {
     }
     let future = QueryFuture::new(state.clone());
 
+    debug!("Awaiting response for {query_id}");
+
     match timeout(Duration::from_secs(1), future).await {
       Ok(data) => Ok(data),
       Err(_) => Err(QueryError::TimedOut)
     }
   }
 
+  #[tracing::instrument(skip_all)]
   pub async fn handle_response(&self, response: MediatorResponse) {
-    let state = {
+    info!("Response received for query {}", response.query_id);
+
+    let Some(state) = ({
       self
         .futures
         .lock()
         .await
         .remove(&Uuid::from_str(&response.query_id).unwrap())
-        .expect("response received for non-existent query")
+    }) else {
+      info!("Query {} already expired", response.query_id);
+      return;
     };
 
-    println!("Response received for {}", response.query_id);
+    debug!("Setting result for query {}", response.query_id);
 
     state.lock().unwrap().success(response.data);
   }

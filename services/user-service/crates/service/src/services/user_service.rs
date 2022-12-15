@@ -12,6 +12,7 @@ use shared_service::{
     FieldValidator, ValidationError, ValidationResultBuilder, Validator
   }
 };
+use tracing::{debug, info};
 use uuid::Uuid;
 
 use crate::{
@@ -45,17 +46,29 @@ impl traits::UserService for UserService {
     dto: CreateUserDto
   ) -> Result<Result<AuthenticatedUserDto, ValidationError>, CreateUserError> {
     if let Err(e) = self.validate(&dto).await {
+      info!(
+        "Validation failed for creating user with username {}",
+        dto.username
+      );
+
       return Ok(Err(e));
     }
 
+    info!("Creating user with username {}", dto.username);
+
     let password_hash = bcrypt::hash(dto.password, bcrypt::DEFAULT_COST)?;
 
-    let user = self.repo.create_user(dto.username, password_hash).await?;
+    let user = self
+      .repo
+      .create_user(dto.username.clone(), password_hash)
+      .await?;
     let token = self
       .mediator
       .query(CreateApiTokenForUserQuery { user_id: user.id })
       .await?
       .token;
+
+    info!("User {} created with username {}", user.id, dto.username);
 
     Ok(Ok(AuthenticatedUserDto {
       user:      user.into(),
@@ -63,28 +76,35 @@ impl traits::UserService for UserService {
     }))
   }
 
+  #[tracing::instrument(skip_all)]
   async fn login(&self, dto: LoginDto) -> Result<Option<AuthenticatedUserDto>, LoginError> {
-    match self.repo.get_user_by_username(&dto.username).await? {
-      Some(user) => {
-        if matches!(bcrypt::verify(dto.password, &user.password_hash), Ok(true)) {
-          let token = self
-            .mediator
-            .query(CreateApiTokenForUserQuery { user_id: user.id })
-            .await?
-            .token;
+    let Some(user) = self.repo.get_user_by_username(&dto.username).await? else {
+      info!("Failed login attempt for nonexistent user: {}", dto.username);
+      return Ok(None)
+    };
 
-          Ok(Some(AuthenticatedUserDto {
-            user:      user.into(),
-            api_token: token
-          }))
-        } else {
-          Ok(None)
-        }
-      }
-      None => Ok(None)
+    if !matches!(bcrypt::verify(dto.password, &user.password_hash), Ok(true)) {
+      info!("Failed login attempt for user: {}", user.id);
+      return Ok(None);
     }
+
+    debug!("Creating token for user: {}", user.id);
+
+    let token = self
+      .mediator
+      .query(CreateApiTokenForUserQuery { user_id: user.id })
+      .await?
+      .token;
+
+    info!("User {} logged in", user.id);
+
+    Ok(Some(AuthenticatedUserDto {
+      user:      user.into(),
+      api_token: token
+    }))
   }
 
+  #[tracing::instrument(skip_all)]
   async fn get_user_by_username(
     &self,
     username: &str
@@ -94,7 +114,17 @@ impl traits::UserService for UserService {
       .get_user_by_username(username)
       .await?
       .map(|u| UserDto::from(u));
-    Ok(user)
+
+    match user {
+      Some(u) => {
+        debug!("User {} retrieved with username: {username}", u.id);
+        Ok(Some(u))
+      }
+      None => {
+        debug!("No user with username {username} exists");
+        Ok(None)
+      }
+    }
   }
 
   async fn delete_user(&self, id: Uuid) -> Result<(), DeleteUserError> {

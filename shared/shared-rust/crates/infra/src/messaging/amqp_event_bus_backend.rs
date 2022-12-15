@@ -3,15 +3,15 @@ use std::collections::HashSet;
 use async_trait::async_trait;
 use lapin::{
   options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions},
-  Channel, Connection, Consumer, ExchangeKind
+  Channel, Connection, ConnectionProperties, Consumer, ExchangeKind
 };
-use log::error;
 use shared_service::messaging::{
   ConsumeOptions, EventBusBackend, EventExchangeType, EventMetadata, ExchangeMetadata,
   ExchangeOptions, QueueOptions, RawEventHandler
 };
 use tokio::runtime::Handle;
 use tokio_stream::StreamExt;
+use tracing::{debug, error, info, info_span, Instrument};
 use uuid::Uuid;
 
 pub struct AmqpEventBusBackend {
@@ -23,7 +23,12 @@ pub struct AmqpEventBusBackend {
 
 impl AmqpEventBusBackend {
   pub async fn connect(uri: &str) -> Self {
-    let connection = Connection::connect(uri, Default::default()).await.unwrap();
+    let connection = Connection::connect(
+      uri,
+      Default::default() // ConnectionProperties::with_connection_name(Default::default(), client_name.into())
+    )
+    .await
+    .unwrap();
     let channel = connection.create_channel().await.unwrap();
     Self {
       _connection: connection,
@@ -35,6 +40,7 @@ impl AmqpEventBusBackend {
 }
 
 impl AmqpEventBusBackend {
+  #[tracing::instrument(skip_all)]
   async fn declare_exchange<'a>(&mut self, metadata: ExchangeMetadata<'a>) {
     if self.exchanges.insert(metadata.name.to_owned()) {
       let ExchangeOptions {
@@ -64,6 +70,7 @@ impl AmqpEventBusBackend {
     }
   }
 
+  #[tracing::instrument(skip_all)]
   async fn declare_queue<'a>(&mut self, name: &str, metadata: EventMetadata<'a>) {
     if self.queues.insert(name.to_owned()) {
       let QueueOptions {
@@ -94,6 +101,7 @@ impl AmqpEventBusBackend {
     }
   }
 
+  #[tracing::instrument(skip_all)]
   async fn bind_queue<'a>(&self, name: &str, metadata: EventMetadata<'a>) {
     self
       .channel
@@ -110,6 +118,7 @@ impl AmqpEventBusBackend {
       .unwrap();
   }
 
+  #[tracing::instrument(skip(self))]
   async fn consume(
     &self,
     queue_name: &str,
@@ -140,6 +149,7 @@ impl AmqpEventBusBackend {
 
 #[async_trait]
 impl EventBusBackend for AmqpEventBusBackend {
+  #[tracing::instrument(skip(self, metadata, handler))]
   async fn subscribe<'a>(
     &mut self,
     queue_name: String,
@@ -153,34 +163,46 @@ impl EventBusBackend for AmqpEventBusBackend {
 
     let mut consumer = self.consume(new_queue_name, metadata.consume_options).await;
 
-    Handle::current().spawn(async move {
-      while let Some(delivery) = consumer.next().await {
-        let delivery = match delivery {
-          Ok(d) => d,
-          Err(e) => {
-            error!("Faulty amqp delivery: {e}");
-            continue;
-          }
-        };
-        let acker = delivery.acker;
-        let data = delivery.data;
-
-        let fut = handler(data);
-        match fut.await {
-          Ok(()) => {
-            if let Err(e) = acker.ack(Default::default()).await {
-              error!("Acknowledgement failed: {e}")
+    Handle::current().spawn(
+      async move {
+        while let Some(delivery) = consumer.next().await {
+          let delivery = match delivery {
+            Ok(d) => d,
+            Err(e) => {
+              error!("Faulty amqp delivery: {e}");
+              continue;
             }
-          }
-          Err(e) => {
-            error!("Error while handling event: {e}")
+          };
+          debug!("Delivery of {} bytes received", delivery.data.len());
+
+          let acker = delivery.acker;
+          let data = delivery.data;
+
+          let fut = handler(data);
+          match fut.await {
+            Ok(()) => {
+              if let Err(e) = acker.ack(Default::default()).await {
+                error!("Acknowledgement failed: {e}")
+              }
+            }
+            Err(e) => {
+              error!("Error while handling event: {e}")
+            }
           }
         }
       }
-    });
+      .instrument(info_span!("amqp_consume", queue_name))
+    );
   }
 
+  #[tracing::instrument(skip_all)]
   async fn publish<'a>(&mut self, metadata: EventMetadata<'a>, data: &[u8]) {
+    info!(
+      "publishing {} bytes to {}",
+      data.len(),
+      metadata.queue.routing_key
+    );
+
     self.declare_exchange(metadata.exchange).await;
 
     self

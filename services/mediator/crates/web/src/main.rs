@@ -12,6 +12,8 @@ use shared_service::{
   events::{MediatorResponse, MEDIATOR_EXCHANGE},
   messaging::{EventBus, EventMetadata, QueueMetadata, QueueOptions}
 };
+use tracing::{info_span, Instrument, Level};
+use tracing_subscriber::FmtSubscriber;
 use uuid::Uuid;
 
 use self::{
@@ -23,6 +25,17 @@ mod event_bus;
 mod mediator_id;
 mod query_handler;
 
+pub fn setup_logger() -> anyhow::Result<()> {
+  let subscriber = FmtSubscriber::builder()
+    .with_max_level(Level::DEBUG)
+    .finish();
+
+  tracing::subscriber::set_global_default(subscriber)?;
+
+  Ok(())
+}
+
+#[tracing::instrument(skip(query_handler, body))]
 async fn query_handler(
   query_handler: Extension<Arc<QueryHandler>>,
   Path(query_name): Path<String>,
@@ -48,6 +61,7 @@ async fn query_handler(
   .unwrap()
 }
 
+#[tracing::instrument(skip(event_bus, query_handler))]
 async fn register_response_listener(
   event_bus: &EventBus,
   mediator_id: &MediatorId,
@@ -76,11 +90,14 @@ async fn register_response_listener(
         }
       }
     )
+    .instrument(info_span!("response_handler"))
     .await;
 }
 
 #[tokio::main]
 async fn main() {
+  setup_logger().unwrap();
+
   let mediator_id = Arc::new(MediatorId {
     uuid: Uuid::new_v4()
   });
