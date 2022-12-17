@@ -8,6 +8,7 @@ on:
       - services/authorization-service/**
       - shared/shared-rust/**
       - .github/workflows/**
+      - actions/**
       - docker/**
       - Cargo.toml
       - rust-toolchain.toml
@@ -20,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: /.github/actions/rust/build_service
+      - uses: /actions/rust/build_service
         with:
           toolchain: nightly
           bin: authorization-service-web
