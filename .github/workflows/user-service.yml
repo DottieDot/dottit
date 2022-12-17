@@ -5,7 +5,7 @@ on:
     branches:
       - "main"
     paths:
-      - ${{ env.path }}
+      - services/user-service/**
       - shared/shared-rust/**
       - .github/workflows/**
       - actions/**
@@ -16,7 +16,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - ${{ env.path }}
+      - services/user-service/**
       - shared/shared-rust/**
       - .github/workflows/**
       - actions/**
@@ -29,7 +29,6 @@ env:
   bin: user-service-web
   target: aarch64-unknown-linux-musl
   package: user-service-*
-  path: services/user-service/**
 
 jobs:
   build:
