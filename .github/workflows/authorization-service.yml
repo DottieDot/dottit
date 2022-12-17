@@ -1,17 +1,19 @@
 name: AuthorizationService
 
-on:
-  push:
-    branches:
-      - "*"
-    paths:
-      - services/authorization-service/**
-      - shared/shared-rust/**
-      - docker/**
-      - Cargo.toml
-      - rust-toolchain.toml
-      - rustfmt.toml
-      - .dockerignore
+on: [push]
+
+# on:
+#   push:
+#     branches:
+#       - "*"
+#     paths:
+#       - services/authorization-service/**
+#       - shared/shared-rust/**
+#       - docker/**
+#       - Cargo.toml
+#       - rust-toolchain.toml
+#       - rustfmt.toml
+#       - .dockerignore
 
 jobs:
   build:
