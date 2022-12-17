@@ -1,10 +1,9 @@
 name: AuthorizationService
 
 on:
-  workflow_dispatch:
   push:
     branches:
-      - "**"
+      - "*"
     paths:
       - services/authorization-service/**
       - shared/shared-rust/**
