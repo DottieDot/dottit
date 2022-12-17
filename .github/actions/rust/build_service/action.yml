@@ -15,7 +15,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ../prepare
+    - uses: /.github/actions/rust/prepare
       with:
         directory: ${{ inputs.directory }}
         toolchain: ${{ inputs.toolchain }}

@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./rust/build_service
+      - uses: /.github/actions/rust/build_service
         with:
           toolchain: nightly
           bin: authorization-service-web
