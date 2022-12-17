@@ -12,9 +12,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ./actions/rust/prepare
-      with:
-        target: ${{ inputs.target }}
     # `cargo fmt` doesn't support pattern for the package option yet...
     # - name: Fmt
     #   uses: actions-rs/cargo@v1
@@ -26,3 +23,4 @@ runs:
       with:
         command: clippy
         args: -p "${{ inputs.package }}" -- -D warnings --no-deps
+        target: ${{ inputs.target }}

@@ -1,4 +1,4 @@
-name: AuthorizationService
+name: UserService
 
 on:
   push:
@@ -26,10 +26,10 @@ on:
       - .dockerignore
 
 env:
-  bin: authorization-service-web
+  bin: user-service-web
   target: aarch64-unknown-linux-musl
-  package: authorization-service-*
-  path: services/authorization-service/**
+  package: user-service-*
+  path: services/user-service/**
 
 jobs:
   build:

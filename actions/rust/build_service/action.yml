@@ -12,11 +12,9 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ./actions/rust/prepare
-      with:
-        target: ${{ inputs.target }}
     - name: Builds on target
       uses: actions-rs/cargo@v1
       with:
         command: build
         args: --bin ${{ inputs.bin }}
+        target: ${{ inputs.target }}
