@@ -1,0 +1,28 @@
+name: Build Service
+description: Builds a given service
+
+inputs:
+  bin:
+    description: The target name of the service
+    required: true
+  toolchain:
+    description: The rust toolchain to use
+    required: true
+  target:
+    description: The target platform
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: ../prepare
+      with:
+        directory: ${{ inputs.directory }}
+        toolchain: ${{ inputs.toolchain }}
+        target: ${{ inputs.target }}
+    - name: Builds on target
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --bin ${{ inputs.bin }}
+        toolchain: ${{ inputs.toolchain }}

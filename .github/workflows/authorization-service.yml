@@ -1,0 +1,26 @@
+name: AuthorizationService
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
+    paths:
+      - services/authorization-service/**
+      - shared/shared-rust/**
+      - docker/**
+      - Cargo.toml
+      - rust-toolchain.toml
+      - rustfmt.toml
+      - .dockerignore
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./rust/build_service
+        with:
+          toolchain: nightly
+          bin: authorization-service-web
+          target: aarch64-unknown-linux-musl
