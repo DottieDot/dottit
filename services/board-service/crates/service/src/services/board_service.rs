@@ -74,10 +74,7 @@ impl traits::BoardService for BoardService {
     Ok(self.mod_repo.get_board_moderators(board).await?)
   }
 
-  async fn get_boards(
-    &self,
-    pagination: Pagination<u64>
-  ) -> anyhow::Result<Page<BoardDto, u64>> {
+  async fn get_boards(&self, pagination: Pagination<u64>) -> anyhow::Result<Page<BoardDto, u64>> {
     Ok(
       self
         .repo

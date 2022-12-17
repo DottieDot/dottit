@@ -1,7 +1,7 @@
 use std::{env, sync::Arc};
 
-use thread_service_infrastructure::thread_service_migration::{Migrator, MigratorTrait};
 use sea_orm::DatabaseConnection;
+use thread_service_infrastructure::thread_service_migration::{Migrator, MigratorTrait};
 
 pub struct Database {
   connection: Arc<DatabaseConnection>

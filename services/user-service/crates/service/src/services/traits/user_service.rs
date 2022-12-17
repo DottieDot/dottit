@@ -19,7 +19,10 @@ pub trait UserService: Send + Sync {
 
   async fn delete_user(&self, id: Uuid) -> Result<(), DeleteUserError>;
 
-  async fn get_user_by_username(&self, username: &str) -> Result<Option<UserDto>, GetUserByUsernameError>;
+  async fn get_user_by_username(
+    &self,
+    username: &str
+  ) -> Result<Option<UserDto>, GetUserByUsernameError>;
 }
 
 #[derive(Error, Debug)]

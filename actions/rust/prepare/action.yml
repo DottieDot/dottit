@@ -2,9 +2,6 @@ name: "Prepare"
 description: "Prepares for Rust builds"
 
 inputs:
-  toolchain:
-    description: The rust toolchain to use
-    required: true
   target:
     description: The target platform
     required: true
@@ -16,6 +13,5 @@ runs:
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: ${{ inputs.toolchain }}
         components: rustfmt, clippy
         target: ${{ inputs.target }}
