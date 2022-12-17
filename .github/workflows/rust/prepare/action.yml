@@ -12,7 +12,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v2
     - name: Fetch toolchain
       uses: actions-rs/toolchain@v1
       with:
