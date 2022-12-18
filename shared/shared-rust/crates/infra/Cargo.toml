@@ -13,6 +13,6 @@ async-trait = "0.1.57"
 lapin = "2.1.1"
 anyhow = "1.0.65"
 tokio = { version = "1.21.2", features = ["full"] }
-uuid = { version = "1.1.2", features = ["v4"] }
+uuid = { workspace = true }
 tokio-stream = "0.1.10"
 tracing = { workspace = true }

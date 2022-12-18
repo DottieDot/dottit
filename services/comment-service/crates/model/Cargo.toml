@@ -8,5 +8,5 @@ name = "comment_service_model"
 path = "src/lib.rs"
 
 [dependencies]
-uuid = "1.2.2"
+uuid = { workspace = true }
 chrono = "0.4.23"

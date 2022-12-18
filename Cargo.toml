@@ -9,3 +9,4 @@ exclude = ["./services/web-service", "./services/message-bus"]
 
 [workspace.dependencies]
 tracing = "0.1"
+uuid = { version = "1.1.2", features = ["v4", "serde"] }
