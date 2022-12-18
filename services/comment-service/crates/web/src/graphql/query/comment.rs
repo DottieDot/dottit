@@ -13,7 +13,7 @@ pub struct Comment {
 #[Object]
 impl Comment {
   async fn id(&self) -> Uuid {
-    self.comment.id.clone().into()
+    self.comment.id
   }
 
   async fn thread(&self) -> Thread {

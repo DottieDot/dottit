@@ -6,8 +6,8 @@ pub struct Unauthorized {
   message: String
 }
 
-impl Unauthorized {
-  pub fn new() -> Self {
+impl Default for Unauthorized {
+  fn default() -> Self {
     Self {
       message: "you do not have access this resource.".into()
     }

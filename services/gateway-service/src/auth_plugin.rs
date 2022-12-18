@@ -79,7 +79,7 @@ impl Plugin for AuthPlugin {
             match get_auth_token_from_header_value(auth_header_value_str) {
               Some(token) => token,
               None => {
-                let error_message = format!("invalid API token format");
+                let error_message = "invalid API token format".to_string();
                 let response = supergraph::Response::error_builder()
                   .error(graphql::Error::builder().message(error_message).build())
                   .status_code(StatusCode::BAD_REQUEST)
@@ -110,7 +110,7 @@ impl Plugin for AuthPlugin {
               .status_code(StatusCode::BAD_REQUEST)
               .context(request.context)
               .build()?;
-            return Ok(ControlFlow::Break(response));
+            Ok(ControlFlow::Break(response))
           }
         }
       }
@@ -159,9 +159,5 @@ impl Plugin for AuthPlugin {
 
 fn get_auth_token_from_header_value(auth_header_value: &str) -> Option<&str> {
   let bearer = "Bearer ";
-  if auth_header_value.starts_with(bearer) {
-    Some(&auth_header_value[bearer.len()..])
-  } else {
-    None
-  }
+  auth_header_value.strip_prefix(bearer)
 }

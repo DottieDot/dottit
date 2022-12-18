@@ -6,8 +6,8 @@ pub struct Unauthenticated {
   message: String
 }
 
-impl Unauthenticated {
-  pub fn new() -> Self {
+impl Default for Unauthenticated {
+  fn default() -> Self {
     Self {
       message: "you have to be logged in to access this resource.".into()
     }

@@ -16,7 +16,7 @@ impl Mutation {
         service.delete_token(&user.token).await?;
         Ok(LogoutResult::LoggedOut(LoggedOut))
       }
-      None => Ok(LogoutResult::NotAuthenticated(Unauthenticated::new()))
+      None => Ok(LogoutResult::NotAuthenticated(Unauthenticated::default()))
     }
   }
 }

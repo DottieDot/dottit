@@ -25,12 +25,12 @@ impl Mutation {
   ) -> Result<CreateCommentResult, CreateCommentError> {
     let service = ctx.data::<Arc<dyn CommentService>>().unwrap();
     let Some(user) = ctx.authenticated_user() else {
-      return Ok(CreateCommentResult::Unauthenticated(Unauthenticated::new()));
+      return Ok(CreateCommentResult::Unauthenticated(Unauthenticated::default()));
     };
 
     let result = service
       .create_comment(CreateCommentDto {
-        thread_id: thread_id.into(),
+        thread_id,
         user_id: user.user_id,
         text
       })

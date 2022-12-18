@@ -1,19 +1,29 @@
 # Dottit
 
+[![](https://github.com/dottiedot/Dottit/actions/workflows/authorization-service.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/authorization-service.yml)
+[![](https://github.com/dottiedot/Dottit/actions/workflows/board-service.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/board-service.yml)
+[![](https://github.com/dottiedot/Dottit/actions/workflows/comment-service.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/comment-service.yml)
+[![](https://github.com/dottiedot/Dottit/actions/workflows/gateway-service.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/gateway-service.yml)
+[![](https://github.com/dottiedot/Dottit/actions/workflows/mediator.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/mediator.yml)
+[![](https://github.com/dottiedot/Dottit/actions/workflows/thread-service.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/thread-service.yml)
+[![](https://github.com/dottiedot/Dottit/actions/workflows/user-service.yml/badge.svg)](https://github.com/DottieDot/dottit/actions/workflows/user-service.yml)
+
+
 ## Prerequisites
 ### Infrastructure Tools
 * Docker
 * Kubectl
 * Krew
 * Minikube
+* Skaffold
 
 ### Language Tools
-* Go
 * Rust
+* NodeJS
+* NPM
 
 ### Database Tools
 * Postgresql
-* MySQL
 
 ## Getting started
 ### Setup Minikube VM/Kubernetes

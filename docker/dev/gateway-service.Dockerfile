@@ -3,14 +3,14 @@
 ##############################
 # ROVER                      #
 ##############################
-FROM rust:1.65 AS rover-cli
+FROM rust:1.66 AS rover-cli
 
 RUN curl -sSL https://rover.apollo.dev/nix/latest | sh
 
 ##############################
 # BUILDER                    #
 ##############################
-FROM rust:1.65 as builder
+FROM rust:1.66 as builder
 
 ARG SERVICE
 ARG BINARY

@@ -21,7 +21,6 @@ use self::{
 };
 
 mod database;
-mod event_bus;
 pub mod graphql;
 
 async fn graphql_handler(
