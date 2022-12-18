@@ -6,8 +6,8 @@ pub struct AlreadyLoggedIn {
   message: String
 }
 
-impl AlreadyLoggedIn {
-  pub fn new() -> Self {
+impl Default for AlreadyLoggedIn {
+  fn default() -> Self {
     Self {
       message: "you are already logged in.".into()
     }

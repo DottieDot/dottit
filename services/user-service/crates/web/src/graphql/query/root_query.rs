@@ -24,7 +24,7 @@ impl Query {
       }
       None => {
         Ok(AuthenticatedUserResult::Unauthenticated(
-          Unauthenticated::new()
+          Unauthenticated::default()
         ))
       }
     }

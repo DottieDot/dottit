@@ -1,0 +1,20 @@
+name: Build Service
+description: Builds a given service
+
+inputs:
+  bin:
+    description: The target name of the service
+    required: true
+  target:
+    description: The target platform
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Builds on target
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --bin ${{ inputs.bin }}
+        target: ${{ inputs.target }}

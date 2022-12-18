@@ -40,7 +40,9 @@ impl Mutation {
         Err(e) => Ok(CreateThreadResult::ValidationError(e.into()))
       }
     } else {
-      Ok(CreateThreadResult::Unauthenticated(Unauthenticated::new()))
+      Ok(CreateThreadResult::Unauthenticated(
+        Unauthenticated::default()
+      ))
     }
   }
 

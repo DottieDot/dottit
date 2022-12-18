@@ -1,0 +1,26 @@
+name: "Prepare"
+description: "Prepares for Rust builds"
+
+inputs:
+  target:
+    description: The target platform
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Cache dependencies and output
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ github.workflow }} }}
+    - name: Fetch toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        components: rustfmt, clippy
+        target: ${{ inputs.target }}
+        toolchain: nightly

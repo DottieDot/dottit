@@ -113,7 +113,7 @@ impl traits::UserService for UserService {
       .repo
       .get_user_by_username(username)
       .await?
-      .map(|u| UserDto::from(u));
+      .map(UserDto::from);
 
     match user {
       Some(u) => {
@@ -134,12 +134,8 @@ impl traits::UserService for UserService {
 
 impl From<RepositoryError> for GetUserByUsernameError {
   fn from(error: RepositoryError) -> Self {
-    match &error {
-      _ => {
-        Self::Unknown {
-          source: error.into()
-        }
-      }
+    Self::Unknown {
+      source: error.into()
     }
   }
 }

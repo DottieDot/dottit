@@ -1,0 +1,26 @@
+name: Lint Service
+description: Lints a given service
+
+inputs:
+  package:
+    description: The pattern of the service
+    required: true
+  target:
+    description: The target platform
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # `cargo fmt` doesn't support pattern for the package option yet...
+    # - name: Fmt
+    #   uses: actions-rs/cargo@v1
+    #   with:
+    #     command: fmt
+    #     args: -p "${{ inputs.package }} --check"
+    - name: Clippy
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: -p "${{ inputs.package }}" -- -D warnings --no-deps
+        target: ${{ inputs.target }}

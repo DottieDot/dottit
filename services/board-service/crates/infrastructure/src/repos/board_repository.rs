@@ -80,7 +80,7 @@ impl BoardRepoTrait for BoardRepository {
     let count_query = board::Entity::find().count(self.db.as_ref());
     let entity_query = board::Entity::find()
       .order_by_desc(board::Column::Name)
-      .offset(pagination.first as u64)
+      .offset(pagination.first)
       .limit(pagination.count + 1)
       .all(self.db.as_ref());
 
@@ -103,7 +103,7 @@ impl BoardRepoTrait for BoardRepository {
 
         Ok(Page {
           items,
-          next: next.map(|dt| dt.into()),
+          next,
           total: Some(count as u64)
         })
       }

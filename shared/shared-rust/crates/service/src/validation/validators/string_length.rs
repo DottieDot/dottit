@@ -29,7 +29,7 @@ impl<'a> StringLength for FieldValidator<'a, String> {
         (Some(min), Some(max)) => {
           format!("must have a minimum of {min} and a maximum of {max} characters.")
         }
-        (None, None) => format!("must be empty.")
+        (None, None) => "must be empty.".to_owned()
       };
 
       self.errors.push(message);

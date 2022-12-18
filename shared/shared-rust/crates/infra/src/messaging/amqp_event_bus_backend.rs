@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use async_trait::async_trait;
 use lapin::{
   options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions},
-  Channel, Connection, ConnectionProperties, Consumer, ExchangeKind
+  Channel, Connection, Consumer, ExchangeKind
 };
 use shared_service::messaging::{
   ConsumeOptions, EventBusBackend, EventExchangeType, EventMetadata, ExchangeMetadata,

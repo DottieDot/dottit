@@ -18,7 +18,7 @@ impl Mutation {
     name: String
   ) -> anyhow::Result<CreateBoardResult> {
     let Some(user) = ctx.authenticated_user() else {
-      return Ok(CreateBoardResult::Unauthenticated(Unauthenticated::new()))
+      return Ok(CreateBoardResult::Unauthenticated(Unauthenticated::default()))
     };
     let service = ctx.data::<Arc<dyn BoardService>>().unwrap();
 

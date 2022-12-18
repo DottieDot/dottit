@@ -1,0 +1,71 @@
+name: BoardService
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - services/board-service/**
+      - shared/shared-rust/**
+      - .github/workflows/**
+      - actions/**
+      - Cargo.toml
+      - rust-toolchain.toml
+      - rustfmt.toml
+      - .dockerignore
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - services/board-service/**
+      - shared/shared-rust/**
+      - .github/workflows/**
+      - actions/**
+      - Cargo.toml
+      - rust-toolchain.toml
+      - rustfmt.toml
+      - .dockerignore
+
+env:
+  bin: board-service-web
+  target: aarch64-unknown-linux-musl
+  package: board-service-*
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./actions/rust/prepare
+        with:
+          target: ${{ env.target }}
+      - uses: ./actions/rust/build_service
+        with:
+          bin: ${{ env.bin }}
+          target: ${{ env.target }}
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./actions/rust/prepare
+        with:
+          target: ${{ env.target }}
+      - uses: ./actions/rust/lint_service
+        with:
+          package: ${{ env.package }}
+          target: ${{ env.target }}
+  unit-test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./actions/rust/prepare
+        with:
+          target: ${{ env.target }}
+      - uses: ./actions/rust/unit_test_service
+        with:
+          package: ${{ env.package }}
+          target: ${{ env.target }}

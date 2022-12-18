@@ -1,0 +1,20 @@
+name: Test Service
+description: Runs unit tests for a given service
+
+inputs:
+  package:
+    description: The pattern of the service
+    required: true
+  target:
+    description: The target platform
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Test
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: -p "${{ inputs.package }}"
+        target: ${{ inputs.target }}
