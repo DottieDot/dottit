@@ -1,7 +1,7 @@
-name: build_deploy_aks
+name: DeployServices
 on:
   push:
-    paths:
+    branches:
       - "main"
 jobs:
   build:
