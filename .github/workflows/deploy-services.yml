@@ -27,7 +27,7 @@
 # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
 # For more options with the actions used below please refer to https://github.com/Azure/login
 
-name: Build and deploy an app to AKS
+name: Build and deploy services to AKS
 
 on:
   push:
@@ -39,31 +39,8 @@ env:
   CONTAINER_NAME: "your-container-name"
   RESOURCE_GROUP: "dottit"
   CLUSTER_NAME: "Dottit"
-  DEPLOYMENT_MANIFEST_PATH: "your-deployment-manifest-path"
 
 jobs:
-  # buildImage:
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # Checks out the repository this file is in
-  #     - uses: actions/checkout@v3
-
-  #     # Logs in with your Azure credentials
-  #     - name: Azure login
-  #       uses: azure/login@v1.4.6
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-  #     # Builds and pushes an image up to your Azure Container Registry
-  #     - name: Build and push image to ACR
-  #       run: |
-  #         az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} .
-
   deploy:
     permissions:
       actions: read
@@ -87,6 +64,11 @@ jobs:
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
           cluster-name: ${{ env.CLUSTER_NAME }}
+
+      - name: "Authenticate container registry"
+        uses: azure/docker-login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # Deploys application using Skaffold
       - name: Deploys application
