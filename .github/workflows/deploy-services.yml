@@ -35,7 +35,6 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CONTAINER_REGISTRY: "DottitRegistry"
   CONTAINER_NAME: "your-container-name"
   RESOURCE_GROUP: "dottit"
   CLUSTER_NAME: "Dottit"
@@ -68,7 +67,9 @@ jobs:
       - name: "Authenticate container registry"
         uses: azure/docker-login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
       # Deploys application using Skaffold
       - name: Deploys application
@@ -76,5 +77,5 @@ jobs:
         with:
           command: run
           working-directory: ${{ github.workspace }}/services/gateway-service
-          repository: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          repository: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           tag: ${{ github.sha }}
