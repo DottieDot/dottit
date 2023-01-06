@@ -20,7 +20,9 @@ ENV BINARY ${BINARY}
 
 WORKDIR /app
 
-# Coyp rover
+RUN apt-get update && apt-get install -y protobuf-compiler
+
+# Copy rover
 COPY --from=rover-cli /root/.rover/bin/rover /usr/bin/rover
 RUN rover --version
 
