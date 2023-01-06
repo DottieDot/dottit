@@ -93,6 +93,6 @@ jobs:
         uses: hiberbee/github-action-skaffold@1.24.0
         with:
           command: run
-          filename: ./services/gateway-service/skaffold.yml
+          working-directory: ${{ github.workspace }}/services/gateway-service
           repository: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
           tag: ${{ github.sha }}
