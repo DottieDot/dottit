@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-service
+  labels:
+    app: dottit
+    service: web-service
+spec:
+  selector:
+    matchLabels:
+      app: web-service
+  template:
+    metadata:
+      labels:
+        app: web-service
+    spec:
+      containers:
+        - name: web-service
+          image: web-service
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 250m
+          ports:
+            - containerPort: 3000

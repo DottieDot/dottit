@@ -78,3 +78,8 @@ To run a service and its dependencies, run:
 ```sh
 skaffold dev --tolerate-failures-until-deadline  
 ```
+
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+```

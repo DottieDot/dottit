@@ -47,7 +47,7 @@ const cache = new InMemoryCache({
   }
 })
 
-const httpLink = createHttpLink({ uri: 'http://127.0.0.1:50072/graphql' })
+const httpLink = createHttpLink({ uri: `http://${process.env.REACT_APP_API_ADDRESS}/graphql` })
 
 const client = new ApolloClient({
   link:           authLink.concat(httpLink),

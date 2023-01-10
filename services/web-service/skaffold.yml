@@ -1,0 +1,26 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+requires:
+  - path: "../gateway-service"
+build:
+  artifacts:
+    - image: web-service
+      context: ../../
+      docker:
+        dockerfile: docker/dev/web-service.Dockerfile
+        buildArgs:
+          SERVICE: web-service
+          BACKEND: api.dottit.local
+  tagPolicy:
+    gitCommit: {}
+  local:
+    useBuildkit: true
+    # concurrency: 0
+deploy:
+  kubectl:
+    manifests:
+      # The order is important
+      - "./k8s/dev/service/*.yml"
+      - "./k8s/dev/dottit-ingressclass.yml"
+      - "./k8s/dev/nginx.config.yml"
+      - "./k8s/dev/dottit-ingress.yml"
