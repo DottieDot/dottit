@@ -57,6 +57,20 @@ kubectl rabbitmq install-cluster-operator
 
 ### 
 
+## Edit hosts
+Add the following two entries to your hosts file
+
+```
+<ingress_ip> dottit.local
+<ingress_ip> api.dottit.local
+```
+
+so for local host:
+```
+127.0.0.1 dottit.local
+127.0.0.1 api.dottit.local
+```
+
 ## Development
 
 ### RabbitMQ Web UI
@@ -79,7 +93,11 @@ To run a service and its dependencies, run:
 skaffold dev --tolerate-failures-until-deadline  
 ```
 
+## E2E Tests
+1. Start the kubernetes cluster with `skaffold dev --tolerate-failures-until-deadline` while inside the `web-service` directory.
+2. Run `npx cypress open`
 
+### Enable ingress when not using Minikube
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
 ```
